@@ -988,17 +988,17 @@
     ];
 
     const SKILLS = [
-      { id: 'body-1',   name: '体能',   en: 'Endurance',      branch: 'body',   row: 0, desc: '心肺与有氧基础，是其他身体能力的底盘。' },
-      { id: 'body-2',   name: '力量',   en: 'Strength',       branch: 'body',   row: 1, desc: '肌肉与骨骼的最大输出能力。' },
-      { id: 'body-3',   name: '柔韧',   en: 'Flexibility',    branch: 'body',   row: 2, desc: '关节活动度与筋膜弹性。' },
+      { id: 'body-1',   name: '体能',   en: 'Endurance',      branch: 'body',   row: 1, desc: '心肺与有氧基础，是其他身体能力的底盘。' },
+      { id: 'body-2',   name: '力量',   en: 'Strength',       branch: 'body',   row: 2, desc: '肌肉与骨骼的最大输出能力。' },
+      { id: 'body-3',   name: '柔韧',   en: 'Flexibility',    branch: 'body',   row: 0, desc: '关节活动度与筋膜弹性，' },
       { id: 'body-4',   name: '耐力',   en: 'Stamina',        branch: 'body',   row: 3, desc: '长时间持续输出的能力。' },
-      { id: 'mind-1',   name: '专注',   en: 'Focus',          branch: 'mind',   row: 0, desc: '在单一任务上保持深度注意的时间与质量。' },
-      { id: 'mind-2',   name: '记忆',   en: 'Memory',         branch: 'mind',   row: 1, desc: '信息的编码、存储与提取。' },
+      { id: 'mind-1',   name: '专注',   en: 'Focus',          branch: 'mind',   row: 1, desc: '在单一任务上保持深度注意的时间与质量。' },
+      { id: 'mind-2',   name: '记忆',   en: 'Memory',         branch: 'mind',   row: 0, desc: '信息的编码、存储与提取。' },
       { id: 'mind-3',   name: '逻辑',   en: 'Logic',          branch: 'mind',   row: 2, desc: '结构化推理、识别谬误、构建论证。' },
       { id: 'mind-4',   name: '创造',   en: 'Creativity',     branch: 'mind',   row: 3, desc: '跨域素材重组出新结构。' },
-      { id: 'skill-1',  name: '沟通',   en: 'Communication',  branch: 'skill',  row: 0, desc: '清晰表达与深度倾听。' },
-      { id: 'skill-2',  name: '写作',   en: 'Writing',        branch: 'skill',  row: 1, desc: '把思考结构化为可阅读的文字。' },
-      { id: 'skill-3',  name: '学习',   en: 'Learning',       branch: 'skill',  row: 2, desc: '方法论、元认知、跨域迁移。' },
+      { id: 'skill-1',  name: '沟通',   en: 'Communication',  branch: 'skill',  row: 1, desc: '清晰表达与深度倾听。' },
+      { id: 'skill-2',  name: '写作',   en: 'Writing',        branch: 'skill',  row: 2, desc: '把思考结构化为可阅读的文字。' },
+      { id: 'skill-3',  name: '学习',   en: 'Learning',       branch: 'skill',  row: 0, desc: '方法论、元认知、跨域迁移。' },
       { id: 'skill-4',  name: '决策',   en: 'Decision',       branch: 'skill',  row: 3, desc: '在不确定下做选择并承担后果。' },
       { id: 'social-1', name: '同理',   en: 'Empathy',        branch: 'social', row: 0, desc: '感受并理解他人处境的能力。' },
       { id: 'social-2', name: '边界',   en: 'Boundaries',     branch: 'social', row: 1, desc: '设立与尊重边界。' },
@@ -1540,12 +1540,12 @@
         svg.appendChild(svgLine(svg, { x1: b.col, y1: 215, x2: b.col, y2: 660, stroke: '#dbdbdb', sw: 1, dash: '2 3' }));
       }
       const synLines = [
-        { x1: 240, y1: 270, x2: 300, y2: 270 },
-        { x1: 960, y1: 270, x2: 1120, y2: 400 },
-        { x1: 960, y1: 400, x2: 1120, y2: 270 },
-        { x1: 520, y1: 530, x2: 460, y2: 530 },
-        { x1: 680, y1: 270, x2: 740, y2: 270 },
-        { x1: 520, y1: 400, x2: 460, y2: 400 },
+        { x1: 240, y1: 400, x2: 300, y2: 400 },     // 体能(身 r1) ↔ 专注(心 r1)
+        { x1: 960, y1: 270, x2: 1120, y2: 400 },    // 自知(道 r0) ↔ 情绪(道 r1)
+        { x1: 960, y1: 400, x2: 1120, y2: 270 },    // 情绪 ↔ 自知 (reverse)
+        { x1: 520, y1: 530, x2: 460, y2: 660 },     // 写作(技 r2) ↔ 创造(心 r3)
+        { x1: 680, y1: 400, x2: 740, y2: 270 },     // 沟通(技 r1) ↔ 同理(群 r0)
+        { x1: 520, y1: 270, x2: 460, y2: 530 },     // 学习(技 r0) ↔ 逻辑(心 r2)
       ];
       for (const ln of synLines) {
         svg.appendChild(svgLine(svg, { x1: ln.x1, y1: ln.y1, x2: ln.x2, y2: ln.y2, stroke: '#000000', sw: 0.5, dash: '3 3', opacity: 0.35 }));
