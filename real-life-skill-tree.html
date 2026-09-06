@@ -1061,30 +1061,62 @@
 
     const CHANGELOG_ENTRIES = [
       {
-        version: '3.0.0', date: '2025-XX-XX', label: '重设计：底部 tab 单页',
+        version: '1.2.4', date: '2026-09-06', label: '同列协同线删除',
+        changes: [
+          { kind: 'fix', text: '自知 ↔ 情绪 是同列相邻节点（道脉 r0 → r1），列脊柱已表达递进；删除冗余斜线。' },
+          { kind: 'design', text: '协同线只保留跨列近迁移（4 条），同列靠脊柱。' },
+        ],
+      },
+      {
+        version: '1.2.3', date: '2026-09-06', label: '协同线去重',
+        changes: [
+          { kind: 'fix', text: '自知 ↔ 情绪 两根对角线中一根冗余，删一根。' },
+        ],
+      },
+      {
+        version: '1.2.2', date: '2026-09-06', label: '五脉二十技排版逻辑化',
+        changes: [
+          { kind: 'change', text: '按"基础 → 综合"重排身 / 心 / 技 三脉。身：柔韧 → 体能 → 力量 → 耐力。心：记忆 → 专注 → 逻辑 → 创造。技：学习 → 沟通 → 写作 → 决策。' },
+          { kind: 'change', text: '群 / 道 两脉已合理（感他 → 立我 → 互构 → 群体；内观 → 与感受 → 冲突中 → 长程），不动。' },
+          { kind: 'change', text: '协同线 SVG 坐标按新位置调整（5 条跨列连接）。' },
+        ],
+      },
+      {
+        version: '1.2.1', date: '2026-09-06', label: '方法引用直链原文',
+        changes: [
+          { kind: 'change', text: '方法 tab 5 个引用链接从 REFERENCES.md#N 改为论文原文 URL。' },
+          { kind: 'change', text: 'Dreyfus 1980 → Open Library；Lally 2010 / Ericsson 1993 / Salomon 1989 / Flavell 1979 → DOI 直链。' },
+          { kind: 'change', text: '文案从「详见引用 →」改为「论文原文 →」，target="_blank" rel="noopener"。' },
+        ],
+      },
+      {
+        version: '1.2.0', date: '2026-09-06', label: '重设计：底部 tab 单页',
         changes: [
           { kind: 'change', text: '从长滚动（v1.1.3 narrative）改为底部 5-tab 切换（角色 / 树 / 今日 / 日志 / 方法）。' },
           { kind: 'change', text: '顶部精简到一行：品牌 + 角色 pill（点击切到角色 tab）+ 日志 / 设置按钮。' },
           { kind: 'change', text: '每个 tab 是 focused 屏，不再"滚到底才能看到方法"。' },
           { kind: 'change', text: 'URL hash 路由（#character / #tree / #today / #log / #method），浏览器前进后退工作。' },
           { kind: 'change', text: '每日刷入默认进入「树」tab（最常见的探索场景）。' },
+          { kind: 'change', text: '设置集中化：导出 / 导入 / 重置 全部进「设置」弹窗。' },
+          { kind: 'change', text: '树紧凑化：legend 横排到标题、tree-wrap 内边距 6px、SVG max-width 860px。' },
           { kind: 'design', text: '依据：daily-use 工具的真实场景是"只做一件事"（勾 / 看 / 记 / 回顾），每个 mental mode 一个屏。' },
+          { kind: 'design', text: '数据 schema 不变（仍是 changji-state v1），旧用户数据自动兼容。' },
         ],
       },
       {
-        version: '1.1.3', date: '2025-XX-XX', label: '更新日志 tab',
+        version: '1.1.3', date: '—', label: '更新日志 tab',
         changes: [
           { kind: 'add', text: 'topnav 加「更新日志」链接 + 页面底部加"第九卷 · 版本"章节 + CHANGELOG_ENTRIES 数组结构化渲染。' },
         ],
       },
       {
-        version: '1.1.2', date: '2025-XX-XX', label: '内容扩充',
+        version: '1.1.2', date: '—', label: '内容扩充',
         changes: [
           { kind: 'add', text: '13 项技能的修习内容从占位符补到具体条目（力量 / 柔韧 / 耐力 / 记忆 / 逻辑 / 沟通 / 学习 / 决策 / 边界 / 关系 / 领导 / 价值 / 意义）。' },
         ],
       },
       {
-        version: '1.1.1', date: '2025-XX-XX', label: '废除 streak 改为周节律',
+        version: '1.1.1', date: '—', label: '废除 streak 改为周节律',
         changes: [
           { kind: 'change', text: '角色面板「连修 N 天」改为「周节律 N/7」。' },
           { kind: 'fix',    text: '3 天高强度 + 4 天休息的人不再被惩罚。' },
@@ -1092,7 +1124,7 @@
         ],
       },
       {
-        version: '1.1.0', date: '2025-XX-XX', label: 'v1.1 圆桌讨论落地',
+        version: '1.1.0', date: '—', label: 'v1.1 圆桌讨论落地',
         changes: [
           { kind: 'add', text: '「今日一笔」自画字段（克利尔身份补丁）。' },
           { kind: 'add', text: '定性化挑战显示（XP 数字降级，"下一关挑战"前置）。' },
@@ -1100,7 +1132,7 @@
         ],
       },
       {
-        version: '1.0.0', date: '2025-XX-XX', label: '首版上线',
+        version: '1.0.0', date: '—', label: '首版上线',
         changes: [
           { kind: 'add', text: '20 项技能 × 五脉 SVG 树。' },
           { kind: 'add', text: '角色面板 / Quests / Featured / 方法 / 日志 / CTA / Footer 七个 section。' },
