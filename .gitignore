@@ -1,0 +1,13 @@
+# macOS
+.DS_Store
+
+# tooling
+.claude/
+
+# backup versions of the main file (kept locally for rollback, not for users)
+real-life-skill-tree-v*.html
+
+# editor
+.vscode/
+*.swp
+*~
