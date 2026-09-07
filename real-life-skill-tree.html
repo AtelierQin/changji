@@ -1363,7 +1363,7 @@
     // ════════════════════════════════════════════════════════════════
 
     const LEVELS = [
-      { lv: 0, name: '未启',  desc: '尚未开始，前置或意愿未到。',         hours: '—' },
+      { lv: 0, name: '未启',  desc: '尚未开始，意愿未到。',                 hours: '—' },
       { lv: 1, name: '初觉',  desc: '能说出「我正在练这个」，知道它是什么。', hours: '~50h' },
       { lv: 2, name: '入门',  desc: '能在熟悉场景下稳定执行，靠规则。',     hours: '~200h' },
       { lv: 3, name: '熟手',  desc: '能目标驱动，拆解问题，自我纠错。',     hours: '~500h' },
@@ -1437,14 +1437,6 @@
       (SYNERGIES[a] = SYNERGIES[a] || []).push(sb.name);
       (SYNERGIES[b] = SYNERGIES[b] || []).push(sa.name);
     }
-
-    const PREREQS = {
-      'body-1':   [{ skill: 'body-3', minLv: 1 }],
-      'mind-1':   [],
-      'mind-4':   [{ skill: 'mind-3', minLv: 3 }, { skill: 'mind-2', minLv: 2 }],
-      'skill-3':  [{ skill: 'mind-2', minLv: 1 }],
-      'spirit-2': [{ skill: 'spirit-1', minLv: 4 }],
-    };
 
     const PRACTICES = {
       'body-1':   ['晨跑 / 游泳 30 分钟', 'Z2 心率有氧 60 分钟', '3 公里计时跑'],
@@ -1632,9 +1624,10 @@
     }
 
     // 每日动态选 QUEST_TARGET_PER_DAY 个 quest
-    // 规则：1) 优先前置可达 + 等级低（需要升阶）的 quest；
+    // 规则：1) 优先等级低（需要升阶）的 quest；
     //       2) 同 dayKey 缓存到 STATE.dailyQuests，当天反复刷新不变；
     //       3) 等级达到 MAX 的技能，其 quest 排除
+    //       4) 已移除前置门控 — 所有非 MAX 等级的 quest 都可选
     function pickDailyQuests(dayKey) {
       if (STATE.dailyQuests && STATE.dailyQuests.dateKey === dayKey
           && Array.isArray(STATE.dailyQuests.ids)
@@ -1646,7 +1639,7 @@
       const seed = hashString(dayKey);
       const usable = QUEST_POOL.filter(q => {
         const lv = (STATE.skills[q.skill]?.level) || 0;
-        return lv < MAX_LEVEL && prereqMet(q.skill);
+        return lv < MAX_LEVEL;
       });
       if (!usable.length) {
         // 无可用 quest（极端）— 退化到默认 5 个
@@ -2046,22 +2039,18 @@
       if (level >= MAX_LEVEL) return LV_THRESH[MAX_LEVEL] - LV_THRESH[MAX_LEVEL - 1];
       return LV_THRESH[level + 1] - LV_THRESH[level];
     }
-    function prereqMet(skillId) {
-      const reqs = PREREQS[skillId];
-      if (!reqs || reqs.length === 0) return true;
-      return reqs.every(r => (STATE.skills[r.skill]?.level || 0) >= r.minLv);
-    }
-    function prereqList(skillId) {
-      const reqs = PREREQS[skillId];
-      if (!reqs || reqs.length === 0) return null;
-      return reqs.map(r => { const s = findSkill(r.skill); return s ? `${s.name} Lv.${r.minLv}` : r.skill; });
-    }
     function classFor(skillId) {
       const lv = STATE.skills[skillId]?.level || 0;
       if (lv === 0) return 'node-locked';
       if (lv >= MAX_LEVEL) return 'node-mastered';
       return 'node-active';
     }
+
+    // 前置系统已移除 — 所有技能可直接练习，不需要先解锁别的
+    // （任何"先练基础再练高阶"的引导由协同线 + 推荐修习的展示承担，
+    //   不再硬性门控）
+    function prereqMet(_skillId) { return true; }
+    function prereqList(_skillId) { return null; }
     function levelProgress(skillId) {
       const s = STATE.skills[skillId];
       if (!s) return 0;
@@ -2156,7 +2145,6 @@
       entry.done = next;
       entry.dayKey = todayKey();
       if (next) {
-        if (!prereqMet(q.skill)) { entry.done = false; return; }
         const ups = addXp(q.skill, q.xp);
         logEntry('quest', q.skill, q.xp, q.name);
         if (ups.length) logEntry('levelup', q.skill, 0, `${findSkill(q.skill)?.name || q.skill} Lv.${ups[ups.length - 1]}`);
@@ -2170,7 +2158,6 @@
       flashNode(q.skill);
     }
     function logPractice(skillId, amount) {
-      if (!prereqMet(skillId)) return;
       const s = findSkill(skillId);
       if (!s) return;
       const xp = amount || XP_PER_PRACTICE(STATE.skills[skillId].level);
@@ -2697,9 +2684,6 @@
       const cur = LEVELS[lv];
       const progress = lv >= MAX_LEVEL ? 100 : Math.min(100, (st.xpInLevel / xpRequiredForLevel(lv)) * 100);
       const synNames = (SYNERGIES[s.id] || []).map(n => `· ${escapeHtml(n)}`).join('  ') || '— 尚无识别';
-      const reqList = prereqList(s.id);
-      const reqText = reqList ? reqList.map(escapeHtml).join('、') : '无 · 可直接开始';
-      const reqMet = prereqMet(s.id);
       const ch = challengeFor(lv);
       const nextLabel = lv >= MAX_LEVEL ? '维持' : `Lv.${lv} → Lv.${lv + 1} 挑战`;
       const practices = (PRACTICES[s.id] || ['写下今天与该技能相关的一件事'])
@@ -2740,11 +2724,10 @@
             </div>
           </div>
           <div class="detail-side">
-            <div class="prereq-list"><h4>前置${reqMet ? '' : ' · 未达成'}</h4><ul><li><span>${reqText}</span></li></ul></div>
             <div class="synergy-list"><h4>协同 · 跨域</h4><ul><li><span>${synNames}</span></li></ul></div>
             <div class="practice-list"><h4>推荐修习</h4><ul>${practices}</ul></div>
             <div class="detail-actions">
-              <button class="btn btn-primary btn-sm" data-action="log-practice" ${reqMet && lv < MAX_LEVEL ? '' : 'disabled'} title="${reqMet ? '' : '请先达成前置'}">记录 1 次 (+${XP_PER_PRACTICE(lv)})</button>
+              <button class="btn btn-primary btn-sm" data-action="log-practice" ${lv < MAX_LEVEL ? '' : 'disabled'}>记录 1 次 (+${XP_PER_PRACTICE(lv)})</button>
               <button class="btn btn-ghost btn-sm" data-action="reset-skill">重置</button>
             </div>
           </div>
@@ -2908,15 +2891,14 @@
         const skill = findSkill(q.skill);
         const entry = STATE.quests[q.id];
         const done = !!(entry && entry.done);
-        const locked = !prereqMet(q.skill);
         const diffBadge = q.difficulty === 1 ? '<span class="meta" style="color:var(--muted);">入门</span>'
                         : q.difficulty >= 3 ? '<span class="meta" style="color:var(--fg);">🔥 高难度</span>'
                         : '';
         return `
           <div class="quest ${done ? 'is-done' : ''}" data-id="${q.id}">
-            <button class="quest-check ${done ? 'is-done' : ''}" data-quest-toggle="${q.id}" ${locked ? 'disabled title="前置未达成"' : ''} aria-pressed="${done}" aria-label="${escapeHtml(q.name)}"></button>
+            <button class="quest-check ${done ? 'is-done' : ''}" data-quest-toggle="${q.id}" aria-pressed="${done}" aria-label="${escapeHtml(q.name)}"></button>
             <div class="quest-body">
-              <div class="name">${escapeHtml(q.name)}${locked ? ' <span class="meta">（前置未达成）</span>' : ''}</div>
+              <div class="name">${escapeHtml(q.name)}</div>
               <div class="meta">${escapeHtml(skill.branch)} · ${escapeHtml(skill.name)}${diffBadge ? ' · ' + diffBadge : ''}</div>
             </div>
             <div class="quest-xp">+${q.xp}</div>
