@@ -74,8 +74,7 @@
       --gap-xl:   40px;
       --radius:   8px;
 
-      --topbar-h: 52px;
-      --tabbar-h: 56px;
+      --topbar-h: 72px;
     }
 
     @supports not (color: color-mix(in oklch, #000 50%, transparent)) {
@@ -117,52 +116,63 @@
       min-height: var(--topbar-h);
     }
     .topbar-inner {
-      max-width: 1200px;
+      max-width: 1600px;
       margin-inline: auto;
-      padding: 6px var(--gap-md);
-      display: flex; align-items: center; justify-content: space-between;
-      gap: var(--gap-md);
+      padding: 10px var(--gap-md);
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      align-items: center;
       min-height: var(--topbar-h);
     }
-    .brand { font-family: var(--font-display); font-size: 18px; font-weight: 700; letter-spacing: -0.02em; flex: none; }
-    .brand-sub { font-family: var(--font-mono); font-size: 10px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-left: 6px; }
-    .character-pill {
-      display: flex; align-items: center; gap: 8px;
-      padding: 6px 12px;
-      background: var(--fg);
-      color: var(--bg);
-      border-radius: 999px;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      letter-spacing: 0.04em;
-      flex: 1;
-      justify-content: center;
-      max-width: 280px;
-    }
-    .character-pill .label { opacity: 0.65; }
-    .character-pill .value { font-weight: 600; }
-    .topbar-actions { display: flex; align-items: center; gap: 4px; flex: none; }
-    .topbar-btn {
-      padding: 6px 10px;
+    .brand { font-family: var(--font-display); font-size: 22px; font-weight: 700; letter-spacing: -0.02em; flex: 0 0 220px; line-height: 1.1; }
+    .brand-block { grid-column: 1 / -1; display: flex; align-items: center; gap: 4px; min-width: 0; }
+    .brand-quote {
+      font-family: var(--font-display);
       font-size: 12px;
+      font-style: italic;
       color: var(--muted);
-      border-radius: var(--radius);
-      transition: color 0.15s, background 0.15s;
+      letter-spacing: 0.02em;
+      font-weight: 400;
+      line-height: 1.5;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      min-width: 0;
+      flex: 1 1 auto;
+      padding-left: var(--gap-md);
     }
-    .topbar-btn:hover { color: var(--fg); background: var(--surface); }
+    .brand-quote.is-loading { opacity: 0.5; }
+    /* unused — 保留作 fallback 标记 */
 
-    @media (max-width: 640px) {
-      .character-pill { font-size: 10px; padding: 5px 10px; }
-      .brand-sub { display: none; }
+    .quote-nav { display: inline-flex; align-items: center; gap: 4px; flex: none; margin-left: 4px; }
+    .quote-btn {
+      width: 22px; height: 22px;
+      display: inline-flex; align-items: center; justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1;
+      transition: color 0.15s, background 0.15s, border-color 0.15s;
+      padding: 0;
     }
+    .quote-btn:hover:not([disabled]) { color: var(--fg); border-color: var(--fg); background: var(--surface); }
+    .quote-btn[disabled] { opacity: 0.35; cursor: not-allowed; }
 
     /* ─── MAIN area + tab panes ────────────────────────────────────── */
-    main {
-      max-width: 1200px;
+    .app-layout {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      max-width: 1600px;
       margin-inline: auto;
+      min-height: calc(100vh - var(--topbar-h));
+    }
+    main {
       padding: var(--gap-md);
-      padding-bottom: calc(var(--tabbar-h) + var(--gap-md));
-      min-height: calc(100vh - var(--topbar-h) - var(--tabbar-h));
+      min-width: 0; /* 允许 main 内容收缩 */
     }
 
     .tab-pane { display: none; }
@@ -172,34 +182,153 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ─── TABBAR (bottom, fixed) ───────────────────────────────────── */
-    .tabbar {
-      position: fixed; bottom: 0; left: 0; right: 0; z-index: 40;
-      background: var(--bg);
-      border-top: 1px solid var(--border);
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      height: var(--tabbar-h);
+    /* ─── SIDEBAR (left vertical nav) ─────────────────────────────── */
+    .sidebar {
+      position: sticky;
+      top: var(--topbar-h);
+      align-self: start;
+      height: calc(100vh - var(--topbar-h));
+      padding: var(--gap-lg) var(--gap-md);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      overflow-y: auto;
     }
-    .tab {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: 2px;
-      padding: 6px 4px;
+    .sidebar-summary {
+      margin-bottom: var(--gap-lg);
+      padding-bottom: var(--gap-md);
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-summary .label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
       color: var(--muted);
-      transition: color 0.15s ease;
-      border-top: 2px solid transparent;
-      margin-top: -1px; /* sit on the border */
-      font-size: 11px;
-      letter-spacing: 0.04em;
+      margin-bottom: 4px;
     }
-    .tab:hover { color: var(--fg); }
-    .tab.is-active { color: var(--fg); font-weight: 600; border-top-color: var(--fg); }
-    .tab .tab-icon { font-family: var(--font-mono); font-size: 14px; line-height: 1; }
-    .tab .tab-label { font-size: 10px; letter-spacing: 0.08em; }
+    .sidebar-summary .value {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+    .sidebar-summary .sub {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
 
-    @media (max-width: 480px) {
-      .tab .tab-label { font-size: 9px; }
-      .tab .tab-icon { font-size: 13px; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 2px; }
+    .sidebar-section { display: flex; flex-direction: column; gap: 2px; margin-bottom: var(--gap-sm); }
+    .sidebar-section-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 6px 12px 2px;
+      font-weight: 500;
+    }
+    .sidebar-divider {
+      height: 1px;
+      background: var(--border);
+      margin: var(--gap-sm) 0;
+    }
+    .sidebar-meta {
+      margin-top: auto;
+      padding-top: var(--gap-md);
+      border-top: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    .tab.tab-meta {
+      font-size: 12px;
+      padding: 7px 12px;
+      color: var(--muted);
+      letter-spacing: 0.02em;
+    }
+    .tab.tab-meta .tab-icon { font-size: 12px; opacity: 0.7; }
+    .tab.tab-meta:hover { color: var(--fg); background: var(--surface); }
+    .tab.tab-meta:hover .tab-icon { opacity: 1; }
+
+    .tab {
+      display: flex; align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 0.02em;
+      border-radius: var(--radius);
+      transition: background 0.15s ease, color 0.15s ease;
+      text-align: left;
+      width: 100%;
+    }
+    .tab:hover { background: var(--surface); color: var(--fg); }
+    .tab.is-active { background: var(--fg); color: var(--bg); font-weight: 600; }
+    .tab.is-active .tab-icon { opacity: 0.85; }
+    .tab .tab-icon {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      line-height: 1;
+      flex: none;
+      width: 16px;
+      text-align: center;
+    }
+    .tab .tab-label { flex: 1; }
+
+    /* ─── responsive: narrow → sidebar collapses to top horizontal ─ */
+    @media (max-width: 768px) {
+      .app-layout {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        position: static;
+        height: auto;
+        padding: var(--gap-sm) var(--gap-md);
+        border-right: 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .sidebar-summary {
+        display: flex; align-items: center; gap: 12px;
+        margin-bottom: var(--gap-sm);
+        padding-bottom: var(--gap-sm);
+      }
+      .sidebar-summary .label { margin-bottom: 0; }
+      .sidebar-summary .sub { margin-top: 0; margin-left: auto; }
+      .sidebar-nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+      .sidebar-section {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-bottom: 0;
+      }
+      .sidebar-section-label {
+        display: none; /* 窄屏隐藏分组标签，节省空间 */
+      }
+      .sidebar-meta {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-top: var(--gap-sm);
+        padding-top: var(--gap-sm);
+        border-top: 1px solid var(--border);
+      }
+      .tab {
+        flex: 1 1 0;
+        width: auto;
+        justify-content: center;
+        padding: 6px 8px;
+        font-size: 12px;
+        min-width: 64px;
+        white-space: nowrap;
+      }
+      .tab.tab-meta {
+        padding: 6px 10px;
+      }
     }
 
     /* ─── TYPE ──────────────────────────────────────────────────────── */
@@ -471,6 +600,91 @@
     .brush-history-row:last-child { border-bottom: 1px solid var(--border); }
     .brush-history-row .date { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
     .brush-history-row .text { font-size: 13px; line-height: 1.55; }
+    .brush-history-row .tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+    .brush-history-row .tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      padding: 1px 7px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+
+    .brush-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+    .brush-tags .tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      padding: 2px 8px;
+      border: 1px solid var(--fg);
+      border-radius: 999px;
+      color: var(--fg);
+      letter-spacing: 0.04em;
+    }
+    .brush-tag-input {
+      width: 100%;
+      margin-top: 8px;
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font: inherit;
+      font-size: 12px;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-mono);
+    }
+    .brush-tag-input:focus { outline: none; border-color: var(--fg); }
+
+    .brush-heatmap {
+      display: grid;
+      grid-template-columns: repeat(45, 1fr);
+      gap: 3px;
+      padding: 6px 0;
+    }
+    @media (max-width: 600px) {
+      .brush-heatmap { grid-template-columns: repeat(30, 1fr); }
+    }
+    @media (max-width: 380px) {
+      .brush-heatmap { grid-template-columns: repeat(15, 1fr); }
+    }
+    .brush-heatmap-cell {
+      aspect-ratio: 1;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      background: var(--bg);
+      transition: transform 0.1s ease;
+    }
+    .brush-heatmap-cell.has-text {
+      background: var(--fg);
+      border-color: var(--fg);
+    }
+    .brush-heatmap-cell.today {
+      outline: 2px solid var(--accent-2);
+      outline-offset: 1px;
+    }
+    .brush-heatmap-legend {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 8px;
+      font-family: var(--font-mono);
+    }
+    .brush-heatmap-legend .swatch {
+      width: 12px; height: 12px; border-radius: 2px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      display: inline-block;
+    }
+    .brush-heatmap-legend .swatch.filled {
+      background: var(--fg); border-color: var(--fg);
+    }
+    .brush-heatmap-meta {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+    }
 
     .quest { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; padding: 12px 0; border-top: 1px solid var(--border); font-size: 13px; }
     .quest:first-child { border-top: 0; }
@@ -498,6 +712,49 @@
       font-family: var(--font-mono); font-size: 11px; color: var(--muted);
       text-align: right;
     }
+
+    /* ─── weekly challenge ────────────────────────────────────────── */
+    .weekly-card {
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg);
+      display: flex; flex-direction: column; gap: 6px;
+      transition: border-color 0.15s ease;
+    }
+    .weekly-card.is-done {
+      background: var(--fg);
+      color: var(--bg);
+      border-color: var(--fg);
+    }
+    .weekly-card .head {
+      display: flex; align-items: baseline; justify-content: space-between;
+      gap: var(--gap-sm);
+    }
+    .weekly-card .name {
+      font-family: var(--font-display);
+      font-size: 15px; font-weight: 600;
+    }
+    .weekly-card .xp {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      flex: none;
+    }
+    .weekly-card.is-done .xp { color: var(--bg); opacity: 0.7; }
+    .weekly-card .desc {
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+    .weekly-card.is-done .desc { color: var(--bg); opacity: 0.85; }
+    .weekly-card .status {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .weekly-card.is-done .status { color: var(--bg); opacity: 0.75; }
 
     /* ─── 日志 (log tab) ────────────────────────────────────────────── */
     .log-stats {
@@ -622,6 +879,39 @@
     .modal-close:hover { color: var(--accent-2); }
 
     .settings-actions { display: flex; flex-direction: column; gap: 10px; }
+    .backup-reminder {
+      padding: 12px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 12px;
+      color: var(--fg);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .backup-reminder.urgent { border-color: var(--fg); }
+    .backup-reminder .text { flex: 1; line-height: 1.5; }
+    .backup-reminder .text strong { font-weight: 600; }
+    .backup-reminder .meta { font-family: var(--font-mono); font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+    .import-paste-area {
+      width: 100%;
+      min-height: 72px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font: inherit;
+      font-size: 13px;
+      background: var(--bg);
+      color: var(--fg);
+      resize: vertical;
+      transition: border-color 0.15s ease, border-style 0.15s ease;
+      font-family: var(--font-mono);
+    }
+    .import-paste-area:focus { outline: none; border-color: var(--fg); }
+    .import-paste-area.is-dragover {
+      border-color: var(--fg);
+      border-style: dashed;
+    }
     .settings-row {
       display: flex; justify-content: space-between; align-items: center;
       padding: 12px 0;
@@ -673,19 +963,66 @@
   <!-- ─── TOPBAR ────────────────────────────────────────────────────── -->
   <header class="topbar">
     <div class="topbar-inner">
-      <div>
-        <a href="#character" class="brand">长技<span class="brand-sub">v3.0</span></a>
-      </div>
-      <button class="character-pill" data-tab-target="character" aria-label="切换到角色 tab">
-        <span class="label">角色</span>
-        <span class="value" id="topbar-pill">Lv.0 · 第 1 天</span>
-      </button>
-      <div class="topbar-actions">
-        <button class="topbar-btn" data-modal-open="changelog" title="查看更新日志">日志</button>
-        <button class="topbar-btn" data-modal-open="settings" title="设置：导出 / 导入 / 重置">设置</button>
+      <div class="brand-block">
+        <a href="#character" class="brand">长技</a>
+        <div class="brand-quote" id="topbar-quote" title="">—</div>
+        <div class="quote-nav">
+          <button class="quote-btn" id="quote-prev" aria-label="上一日名言" title="上一日">‹</button>
+          <button class="quote-btn" id="quote-next" aria-label="下一日名言" title="下一日">›</button>
+        </div>
       </div>
     </div>
   </header>
+
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-summary">
+        <div class="label">角色</div>
+        <div class="value">修习者</div>
+        <div class="sub" id="sidebar-pill">Lv.0 · 第 1 天</div>
+      </div>
+      <nav class="sidebar-nav" role="navigation">
+        <div class="sidebar-section">
+          <div class="sidebar-section-label">旅程</div>
+          <button class="tab" data-tab-target="character" aria-label="角色">
+            <span class="tab-icon">◉</span>
+            <span class="tab-label">角色</span>
+          </button>
+          <button class="tab" data-tab-target="tree" aria-label="技能树">
+            <span class="tab-icon">⌘</span>
+            <span class="tab-label">技能树</span>
+          </button>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-section-label">每日</div>
+          <button class="tab" data-tab-target="today" aria-label="今日">
+            <span class="tab-icon">✦</span>
+            <span class="tab-label">今日</span>
+          </button>
+          <button class="tab" data-tab-target="log" aria-label="日志">
+            <span class="tab-icon">≡</span>
+            <span class="tab-label">日志</span>
+          </button>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-section-label">参考</div>
+          <button class="tab" data-tab-target="method" aria-label="方法">
+            <span class="tab-icon">?</span>
+            <span class="tab-label">方法</span>
+          </button>
+        </div>
+      </nav>
+      <div class="sidebar-meta">
+        <button class="tab tab-meta" data-modal-open="changelog" aria-label="更新日志">
+          <span class="tab-icon">↻</span>
+          <span class="tab-label">更新日志</span>
+        </button>
+        <button class="tab tab-meta" data-modal-open="settings" aria-label="设置">
+          <span class="tab-icon">⚙</span>
+          <span class="tab-label">设置</span>
+        </button>
+      </div>
+    </aside>
 
   <main>
 
@@ -733,6 +1070,18 @@
       <div id="today-summary-mount"></div>
       <div class="panel">
         <div class="panel-title">
+          <span>笔触热力</span>
+          <span class="panel-title-meta" id="heatmap-meta">—</span>
+        </div>
+        <div id="heatmap-mount"></div>
+        <div class="brush-heatmap-legend">
+          <span class="swatch"></span><span>空</span>
+          <span class="swatch filled"></span><span>已记</span>
+          <span style="margin-left:auto;">最近 90 天</span>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">
           <span>今日一笔 · 身份自画</span>
           <span class="panel-title-meta" id="brush-count">今日一笔</span>
         </div>
@@ -744,6 +1093,13 @@
           <span class="panel-title-meta" id="quest-progress">0 / 5 完成 · 0 XP</span>
         </div>
         <div id="quest-list"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">
+          <span>本周挑战</span>
+          <span class="panel-title-meta" id="weekly-meta">自动判定 · 一周一换</span>
+        </div>
+        <div id="weekly-mount"></div>
       </div>
     </section>
 
@@ -836,30 +1192,9 @@
     </section>
 
   </main>
+  </div>
 
-  <!-- ─── TABBAR (bottom, fixed) ────────────────────────────────────── -->
-  <nav class="tabbar" role="navigation">
-    <button class="tab" data-tab-target="character" aria-label="角色">
-      <span class="tab-icon">◉</span>
-      <span class="tab-label">角色</span>
-    </button>
-    <button class="tab" data-tab-target="tree" aria-label="技能树">
-      <span class="tab-icon">⌘</span>
-      <span class="tab-label">树</span>
-    </button>
-    <button class="tab" data-tab-target="today" aria-label="今日">
-      <span class="tab-icon">✦</span>
-      <span class="tab-label">今日</span>
-    </button>
-    <button class="tab" data-tab-target="log" aria-label="日志">
-      <span class="tab-icon">≡</span>
-      <span class="tab-label">日志</span>
-    </button>
-    <button class="tab" data-tab-target="method" aria-label="方法">
-      <span class="tab-icon">?</span>
-      <span class="tab-label">方法</span>
-    </button>
-  </nav>
+  <!-- 旧底部 tabbar 已移除：tab 改为左侧 sidebar（见 .app-layout / .sidebar） -->
 
   <!-- ─── SETTINGS modal ────────────────────────────────────────────── -->
   <div class="modal-backdrop" id="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-modal-title" hidden>
@@ -869,19 +1204,34 @@
         <button class="modal-close" data-modal-close="settings" aria-label="关闭">×</button>
       </div>
       <div class="settings-actions">
+        <div id="backup-reminder-mount"></div>
         <div class="settings-row">
           <div>
             <div class="label-main">导出</div>
-            <div class="label-sub">把当前所有数据复制为 JSON 字符串</div>
+            <div class="label-sub">下载 .json 文件，或复制一个可分享的链接</div>
           </div>
-          <button class="btn btn-secondary btn-sm" id="export-btn">导出 JSON</button>
+          <div style="display: flex; gap: 6px;">
+            <button class="btn btn-secondary btn-sm" id="export-btn">下载 .json</button>
+            <button class="btn btn-secondary btn-sm" id="share-btn">复制链接</button>
+          </div>
         </div>
         <div class="settings-row">
           <div>
             <div class="label-main">导入</div>
-            <div class="label-sub">从之前导出的 JSON 字符串恢复</div>
+            <div class="label-sub">从 .json 文件恢复，或把 JSON 拖到下方</div>
           </div>
-          <button class="btn btn-secondary btn-sm" id="import-btn">导入 JSON</button>
+          <button class="btn btn-secondary btn-sm" id="import-btn">选择文件</button>
+        </div>
+        <div class="settings-row" style="display: block;">
+          <div style="margin-bottom: 8px;">
+            <div class="label-main">拖放 / 粘贴 JSON</div>
+            <div class="label-sub">支持直接拖入 .json 文件，或把 JSON 字符串粘贴进文本框后点恢复</div>
+          </div>
+          <textarea id="import-text" class="import-paste-area" placeholder='把 JSON 字符串粘贴在这里，或把 .json 文件拖到此处…' aria-label="导入文本框"></textarea>
+          <div style="margin-top: 8px; display: flex; gap: 6px;">
+            <button class="btn btn-secondary btn-sm" id="import-paste-btn">从粘贴恢复</button>
+            <button class="btn btn-ghost btn-sm" id="import-clear-btn">清空</button>
+          </div>
         </div>
         <div class="settings-row">
           <div>
@@ -898,6 +1248,7 @@
           <a class="btn btn-ghost btn-sm" href="README.md">README</a>
         </div>
       </div>
+      <input type="file" id="import-file" accept=".json,application/json" style="display:none;" />
     </div>
   </div>
 
@@ -934,6 +1285,30 @@
     const SCHEMA_VERSION = 1;
     const STORAGE_KEY = 'changji-state';
     const STORAGE_KEY_SEL = 'changji-skill';
+    const SCHEMA_MIGRATIONS = {
+      // 每个 entry: key = 起始版本号，fn 把 state 从 key 升到 key+1
+      // 当前是 v1 → v1（字段补全：新版本加的字段给旧数据默认值）
+      1: (s) => {
+        if (!('dailyQuests' in s)) s.dailyQuests = null;
+        if (!('weeklyClaimed' in s)) s.weeklyClaimed = {};
+        if (typeof s.lastBackupAt !== 'number') s.lastBackupAt = 0;
+        // brush 数据 shape 升级：string → { text, tags }
+        if (s.dailyBrush && typeof s.dailyBrush === 'object') {
+          for (const k of Object.keys(s.dailyBrush)) {
+            const v = s.dailyBrush[k];
+            if (typeof v === 'string') s.dailyBrush[k] = { text: v, tags: [] };
+            else if (v && typeof v === 'object') {
+              s.dailyBrush[k] = {
+                text: typeof v.text === 'string' ? v.text : '',
+                tags: Array.isArray(v.tags) ? v.tags.filter(t => typeof t === 'string') : [],
+              };
+            }
+          }
+        }
+        return s;
+      },
+    };
+    const BACKUP_REMIND_DAYS = 14;
     const FLASH_KEEP_MS = 800;
     const XP_PER_PRACTICE = lv => Math.max(4, Math.round((lv + 1) * 4));
     const QUEST_TARGET_PER_DAY = 5;
@@ -1053,7 +1428,281 @@
       { id: 'q5', name: '复盘今日三件事',          skill: 'skill-3',  xp: 9 },
     ];
 
+    // 24 个候选 quest — 每日根据用户状态动态选 5 个
+    // q1-q5 id 保持兼容旧用户的完成数据
+    const QUEST_POOL = [
+      // 种子：保留原版5个
+      { id: 'q1',  name: '晨跑 3 公里（Z2 心率）',         skill: 'body-1',   xp: 12, difficulty: 1 },
+      { id: 'q2',  name: '冥想 15 分钟，觉察走神',         skill: 'spirit-1', xp: 8,  difficulty: 1 },
+      { id: 'q3',  name: '写 500 字（任一主题）',          skill: 'skill-2',  xp: 14, difficulty: 2 },
+      { id: 'q4',  name: '深度倾听家人 20 分钟',           skill: 'social-1', xp: 10, difficulty: 1 },
+      { id: 'q5',  name: '复盘今日三件事',                  skill: 'skill-3',  xp: 9,  difficulty: 1 },
+      // 身脉
+      { id: 'q6',  name: '有氧运动 30 分钟',                skill: 'body-1',   xp: 8,  difficulty: 1 },
+      { id: 'q7',  name: '复合动作 3 组 × 5 次',            skill: 'body-2',   xp: 14, difficulty: 2 },
+      { id: 'q8',  name: '自重循环 3 轮',                   skill: 'body-2',   xp: 10, difficulty: 1 },
+      { id: 'q9',  name: '全身静态拉伸 15 分钟',            skill: 'body-3',   xp: 6,  difficulty: 1 },
+      { id: 'q10', name: '长距离慢跑 60 分钟',              skill: 'body-4',   xp: 16, difficulty: 3 },
+      // 心脉
+      { id: 'q11', name: '番茄钟 4 × 25 分钟',              skill: 'mind-1',   xp: 10, difficulty: 1 },
+      { id: 'q12', name: 'Anki / 间隔复习 30 张卡片',       skill: 'mind-2',   xp: 10, difficulty: 2 },
+      { id: 'q13', name: '找一段论证，标出隐藏假设',        skill: 'mind-3',   xp: 14, difficulty: 2 },
+      { id: 'q14', name: '做一次 5-why 追问',               skill: 'mind-4',   xp: 12, difficulty: 2 },
+      // 技脉
+      { id: 'q15', name: '即兴 1 分钟自我介绍（录音回听）', skill: 'skill-1',  xp: 10, difficulty: 1 },
+      { id: 'q16', name: '改一篇文章的三段',                skill: 'skill-2',  xp: 12, difficulty: 2 },
+      { id: 'q17', name: '教别人 5 分钟你刚学的东西',       skill: 'skill-3',  xp: 12, difficulty: 2 },
+      { id: 'q18', name: '列选项 + 最大可承受损失',         skill: 'skill-4',  xp: 10, difficulty: 1 },
+      // 群脉
+      { id: 'q19', name: '今天拒绝一个不重要的请求',        skill: 'social-2', xp: 8,  difficulty: 1 },
+      { id: 'q20', name: '联系一位 3 个月未联系的老友',     skill: 'social-3', xp: 10, difficulty: 1 },
+      { id: 'q21', name: '召集一次无议程讨论',              skill: 'social-4', xp: 14, difficulty: 2 },
+      // 道脉
+      { id: 'q22', name: '命名此刻情绪',                    skill: 'spirit-2', xp: 6,  difficulty: 1 },
+      { id: 'q23', name: '写下今天 3 个选择 + 真实动机',    skill: 'spirit-3', xp: 12, difficulty: 2 },
+      { id: 'q24', name: '写下让你觉得"值得做"的瞬间',      skill: 'spirit-4', xp: 10, difficulty: 1 },
+    ];
+
+    // 周挑战 — 自动判定，完成后一次性发放 XP
+    const WEEKLY_CHALLENGES = [
+      {
+        id: 'cross-3',
+        name: '三脉齐动',
+        desc: '本周在 3 个不同脉各完成至少 1 个 quest',
+        xp: 30,
+        check: (state) => {
+          const cutoff = Date.now() - 7 * 86400000;
+          const branches = new Set();
+          for (const e of state.log) {
+            if (e.ts < cutoff) continue;
+            if (e.kind !== 'quest' && e.kind !== 'practice') continue;
+            const sk = findSkill(e.skill);
+            if (sk) branches.add(sk.branch);
+          }
+          return branches.size >= 3;
+        },
+      },
+      {
+        id: 'streak-3',
+        name: '三天连修',
+        desc: '本周连续 3 天都有记录',
+        xp: 25,
+        check: (state) => {
+          const cutoff = Date.now() - 7 * 86400000;
+          const days = new Set();
+          for (const e of state.log) {
+            if (e.ts < cutoff) continue;
+            const d = new Date(e.ts);
+            days.add(`${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`);
+          }
+          for (let i = 0; i < 5; i++) {
+            const d1 = new Date(); d1.setDate(d1.getDate() - i);
+            const d2 = new Date(); d2.setDate(d2.getDate() - i - 1);
+            const d3 = new Date(); d3.setDate(d3.getDate() - i - 2);
+            const k1 = `${d1.getFullYear()}-${pad2(d1.getMonth() + 1)}-${pad2(d1.getDate())}`;
+            const k2 = `${d2.getFullYear()}-${pad2(d2.getMonth() + 1)}-${pad2(d2.getDate())}`;
+            const k3 = `${d3.getFullYear()}-${pad2(d3.getMonth() + 1)}-${pad2(d3.getDate())}`;
+            if (days.has(k1) && days.has(k2) && days.has(k3)) return true;
+          }
+          return false;
+        },
+      },
+      {
+        id: 'levelup-1',
+        name: '本周升阶',
+        desc: '本周至少 1 项技能升阶',
+        xp: 30,
+        check: (state) => {
+          const cutoff = Date.now() - 7 * 86400000;
+          return state.log.some(e => e.ts >= cutoff && e.kind === 'levelup');
+        },
+      },
+      {
+        id: 'total-100',
+        name: '百 XP',
+        desc: '本周累计获得 100 XP',
+        xp: 20,
+        check: (state) => {
+          const cutoff = Date.now() - 7 * 86400000;
+          return state.log.filter(e => e.ts >= cutoff).reduce((s, e) => s + (e.xp || 0), 0) >= 100;
+        },
+      },
+      {
+        id: 'brush-5',
+        name: '五日笔触',
+        desc: '本周 5 天都有写「今日一笔」',
+        xp: 20,
+        check: (state) => {
+          const cutoff = Date.now() - 7 * 86400000;
+          let count = 0;
+          for (const [k, v] of Object.entries(state.dailyBrush || {})) {
+            if (!v || !/^\d{4}-\d{2}-\d{2}$/.test(k)) continue;
+            const ts = new Date(k + 'T23:59:59').getTime();
+            if (ts >= cutoff) count++;
+          }
+          return count >= 5;
+        },
+      },
+    ];
+
+    function hashString(s) {
+      let h = 0;
+      for (let i = 0; i < s.length; i++) {
+        h = ((h << 5) - h) + s.charCodeAt(i);
+        h |= 0;
+      }
+      return Math.abs(h);
+    }
+
+    // 每日动态选 QUEST_TARGET_PER_DAY 个 quest
+    // 规则：1) 优先前置可达 + 等级低（需要升阶）的 quest；
+    //       2) 同 dayKey 缓存到 STATE.dailyQuests，当天反复刷新不变；
+    //       3) 等级达到 MAX 的技能，其 quest 排除
+    function pickDailyQuests(dayKey) {
+      if (STATE.dailyQuests && STATE.dailyQuests.dateKey === dayKey
+          && Array.isArray(STATE.dailyQuests.ids)
+          && STATE.dailyQuests.ids.length === QUEST_TARGET_PER_DAY) {
+        return STATE.dailyQuests.ids
+          .map(id => QUEST_POOL.find(q => q.id === id))
+          .filter(Boolean);
+      }
+      const seed = hashString(dayKey);
+      const usable = QUEST_POOL.filter(q => {
+        const lv = (STATE.skills[q.skill]?.level) || 0;
+        return lv < MAX_LEVEL && prereqMet(q.skill);
+      });
+      if (!usable.length) {
+        // 无可用 quest（极端）— 退化到默认 5 个
+        const fallback = DEFAULT_QUESTS.slice(0, QUEST_TARGET_PER_DAY);
+        STATE.dailyQuests = { dateKey: dayKey, ids: fallback.map(q => q.id) };
+        return fallback;
+      }
+      // 按"等级升序 + 难度升序"排序，让低等级优先被推到前面
+      const sorted = usable.slice().sort((a, b) => {
+        const la = (STATE.skills[a.skill]?.level) || 0;
+        const lb = (STATE.skills[b.skill]?.level) || 0;
+        if (la !== lb) return la - lb;
+        return a.difficulty - b.difficulty;
+      });
+      const picked = [];
+      const used = new Set();
+      // 先取排序最前的 3 个（低等级 / 低难度）
+      for (const q of sorted) {
+        if (picked.length >= 3) break;
+        picked.push(q.id);
+        used.add(q.id);
+      }
+      // 用 seed 从剩余随机补足到 QUEST_TARGET_PER_DAY
+      const remaining = sorted.filter(q => !used.has(q.id));
+      while (picked.length < QUEST_TARGET_PER_DAY && remaining.length) {
+        const idx = (seed + picked.length * 7) % remaining.length;
+        picked.push(remaining[idx].id);
+        remaining.splice(idx, 1);
+      }
+      // 如果 usable 不足 5 个，全部都入选
+      STATE.dailyQuests = { dateKey: dayKey, ids: picked };
+      persist();
+      return picked.map(id => QUEST_POOL.find(q => q.id === id)).filter(Boolean);
+    }
+
+    function getWeekKey(d) {
+      // ISO week：以周一作为一周开始
+      const day = new Date(d);
+      const dow = (day.getDay() + 6) % 7; // 周一=0
+      day.setDate(day.getDate() - dow);
+      return `${day.getFullYear()}-${pad2(day.getMonth() + 1)}-${pad2(day.getDate())}`;
+    }
+
+    function getWeeklyChallenge() {
+      const weekKey = getWeekKey(new Date());
+      const seed = hashString(weekKey);
+      const idx = seed % WEEKLY_CHALLENGES.length;
+      const c = WEEKLY_CHALLENGES[idx];
+      let completed = false;
+      try { completed = !!c.check(STATE); } catch (e) { completed = false; }
+      return { ...c, weekKey, completed };
+    }
+
+    // 每日一句 — 本地精选 32 条中外经典，按 dayKey seed 选 1 条
+    // 32 天循环，全部是历史名人传世名言
+    const QUOTES = [
+      // —— 中文经典 ——
+      { text: '千里之行，始于足下。',                                author: '老子' },
+      { text: '不积跬步，无以至千里；不积小流，无以成江海。',         author: '荀子' },
+      { text: '道阻且长，行则将至；行而不辍，未来可期。',              author: '《左传》' },
+      { text: '但行好事，莫问前程。',                                 author: '《增广贤文》' },
+      { text: '日拱一卒，功不唐捐。',                                 author: '曾国藩' },
+      { text: '业精于勤，荒于嬉；行成于思，毁于随。',                  author: '韩愈' },
+      { text: '修其心，治其身，而后方可以为政于天下。',                  author: '王阳明' },
+      { text: '知止而后有定，定而后能静，静而后能安。',                 author: '《大学》' },
+      { text: '路漫漫其修远兮，吾将上下而求索。',                      author: '屈原' },
+      { text: '博观而约取，厚积而薄发。',                              author: '苏轼' },
+      { text: '非淡泊无以明志，非宁静无以致远。',                       author: '诸葛亮' },
+      { text: '纸上得来终觉浅，绝知此事要躬行。',                       author: '陆游' },
+      { text: '行百里者半九十。',                                      author: '《战国策》' },
+      { text: '吾生也有涯，而知也无涯。',                              author: '庄子' },
+      { text: '君子求诸己，小人求诸人。',                              author: '《论语》' },
+      { text: '学而时习之，不亦说乎。',                                author: '孔子' },
+      // —— 英文经典 ——
+      { text: 'The unexamined life is not worth living.',             author: 'Socrates' },
+      { text: 'I think, therefore I am.',                              author: 'René Descartes' },
+      { text: 'Knowledge is power.',                                   author: 'Francis Bacon' },
+      { text: 'Stay hungry, stay foolish.',                            author: 'Steve Jobs' },
+      { text: 'Be the change you wish to see in the world.',           author: 'Gandhi' },
+      { text: 'The future depends on what you do today.',              author: 'Mahatma Gandhi' },
+      { text: 'Strive not to be a success, but rather to be of value.', author: 'Einstein' },
+      { text: 'Life is what happens when you are busy making other plans.', author: 'John Lennon' },
+      { text: 'In the middle of difficulty lies opportunity.',         author: 'Einstein' },
+      { text: 'We are what we repeatedly do. Excellence, then, is not an act but a habit.', author: 'Aristotle' },
+      { text: 'The best time to plant a tree was 20 years ago. The second best time is now.', author: 'Chinese proverb' },
+      { text: 'It does not matter how slowly you go as long as you do not stop.', author: 'Confucius' },
+      { text: 'Discipline is the bridge between goals and accomplishment.', author: 'Jim Rohn' },
+      { text: 'One day or day one. You decide.',                       author: 'Paulo Coelho' },
+      { text: 'Do the hard jobs first. The easy jobs will take care of themselves.', author: 'Dale Carnegie' },
+      { text: 'All great achievements require time. No one becomes great overnight.', author: 'Maya Angelou' },
+    ];
+
+    function pickDailyQuote(dayKey) {
+      const seed = hashString(dayKey);
+      return QUOTES[seed % QUOTES.length];
+    }
+
     const CHANGELOG_ENTRIES = [
+      {
+        version: '1.2.8', date: '2026-09-07', label: '产品功能 + 左右排版 + 每日名言',
+        changes: [
+          { kind: 'add', text: 'Quest 系统：硬编码 5 个 → 24 候选池；按 dayKey 动态选 5 个；自动判定周挑战（5 种）+ 完成发放 XP。' },
+          { kind: 'add', text: '数据迁移：SCHEMA_MIGRATIONS 机制 + loadState 尽力兼容任意 version；备份提醒每 14 天。' },
+          { kind: 'add', text: '导入导出升级：下载 .json 文件 + 复制 base64 分享链接 + 文件选择/拖放/粘贴 多种方式。' },
+          { kind: 'add', text: '今日一笔增强：tag 系统（空格分隔）+ 90 天热力图（45 列紧凑布局）；brush 数据 shape 升级为 { text, tags }。' },
+          { kind: 'add', text: 'Topbar 重设计：长技 + 每日名人名言；Wikiquote JSONP 拉取 + prev/next 按钮手动切换 + 32 条本地精选 fallback。' },
+          { kind: 'design', text: '布局重构：底部 tabbar → 左侧 sidebar（220px sticky，分组：旅程 / 每日 / 参考）；topbar 元动作下沉到 sidebar meta 区。' },
+          { kind: 'design', text: 'max-width 1200 → 1600 充分利用屏幕宽度。' },
+          { kind: 'design', text: 'Topbar 镜像 .app-layout grid：长技对齐 sidebar 内容，名言对齐 main 内容。' },
+          { kind: 'design', text: 'Topbar quote 支持最多两行（-webkit-line-clamp: 2），长句完整可读。' },
+          { kind: 'design', text: '笔触热力图 15 列 → 45 列（GitHub 贡献图风格），90 天 = 2 行。' },
+        ],
+      },
+      {
+        version: '1.2.7', date: '2026-09-07', label: '修复 renderChangelog null mount',
+        changes: [
+          { kind: 'fix', text: 'renderChangelogModal 在 mount 元素未渲染时静默失败，不再抛错。' },
+          { kind: 'change', text: '从 renderAll 中移除 renderChangelog 调用（modal 按需渲染）。' },
+        ],
+      },
+      {
+        version: '1.2.6', date: '2026-09-07', label: '方法 tab 移除更新日志区块',
+        changes: [
+          { kind: 'design', text: '更新日志独立成 modal（顶栏按钮），不再混在方法 tab 底部。' },
+        ],
+      },
+      {
+        version: '1.2.5', date: '2026-09-07', label: '版本号续号 + 真实日期',
+        changes: [
+          { kind: 'meta', text: 'CHANGELOG_ENTRIES 所有日期占位符 "—" 替换为真实日期。' },
+          { kind: 'meta', text: 'git tag 命名从 v3.0.x 切到 v1.2.x 系列（产品代码版本号保持 changji-state v1）。' },
+        ],
+      },
       {
         version: '1.2.4', date: '2026-09-06', label: '同列协同线删除',
         changes: [
@@ -1158,6 +1807,9 @@
         quests,
         log: [],
         dailyBrush: {},
+        dailyQuests: null,        // { dateKey, ids } — 当天 5 个 quest 缓存
+        weeklyClaimed: {},        // { "weekKey:id": true } — 一次性 XP 已发
+        lastBackupAt: 0,          // 上次手动导出/导入的时间戳
       };
     }
 
@@ -1187,22 +1839,84 @@
         return;
       }
       if (!parsed || parsed.schema !== 'changji-state') return;
-      if (parsed.version !== SCHEMA_VERSION) return;
+
       const def = createDefaultState();
+      // 尽力兼容：旧/新版本都接受，用迁移链补全字段
+      const fromVer = (typeof parsed.version === 'number') ? parsed.version : SCHEMA_VERSION;
+      let migrated = parsed;
+      try {
+        for (let v = fromVer; v < SCHEMA_VERSION; v++) {
+          const fn = SCHEMA_MIGRATIONS[v];
+          if (fn) { const out = fn({ ...migrated }); if (out) migrated = out; }
+        }
+      } catch (e) { console.warn('migration failed:', e); }
+
       STATE = {
         schema: 'changji-state',
         version: SCHEMA_VERSION,
-        startedAt: parsed.startedAt || def.startedAt,
-        lastUpdatedAt: parsed.lastUpdatedAt || def.lastUpdatedAt,
-        skills: { ...def.skills, ...(parsed.skills || {}) },
-        quests: { ...def.quests, ...(parsed.quests || {}) },
-        log: Array.isArray(parsed.log) ? parsed.log : [],
-        dailyBrush: (parsed.dailyBrush && typeof parsed.dailyBrush === 'object') ? parsed.dailyBrush : {},
+        startedAt: migrated.startedAt || def.startedAt,
+        lastUpdatedAt: migrated.lastUpdatedAt || def.lastUpdatedAt,
+        skills: { ...def.skills, ...(migrated.skills || {}) },
+        quests: { ...def.quests, ...(migrated.quests || {}) },
+        log: Array.isArray(migrated.log) ? migrated.log : [],
+        dailyBrush: (migrated.dailyBrush && typeof migrated.dailyBrush === 'object') ? migrated.dailyBrush : {},
+        dailyQuests: (migrated.dailyQuests && typeof migrated.dailyQuests === 'object') ? migrated.dailyQuests : null,
+        weeklyClaimed: (migrated.weeklyClaimed && typeof migrated.weeklyClaimed === 'object') ? migrated.weeklyClaimed : {},
+        lastBackupAt: (typeof migrated.lastBackupAt === 'number') ? migrated.lastBackupAt : 0,
       };
       const today = todayKey();
       for (const q of Object.keys(STATE.quests)) {
         if (STATE.quests[q].dayKey !== today) STATE.quests[q] = { done: false, dayKey: today };
       }
+      // 迁移完成，持久化（升级版本号/补全字段）
+      persist();
+    }
+
+    function daysSinceBackup() {
+      if (!STATE.lastBackupAt) return Infinity;
+      return Math.floor((Date.now() - STATE.lastBackupAt) / 86400000);
+    }
+    function markBacked() {
+      STATE.lastBackupAt = Date.now();
+      persist();
+    }
+
+    function renderBackupReminder() {
+      const el = document.getElementById('backup-reminder-mount');
+      if (!el) return;
+      const days = daysSinceBackup();
+      const infinite = !isFinite(days);
+      const urgent = infinite || days >= BACKUP_REMIND_DAYS;
+      let html;
+      if (urgent) {
+        const headline = infinite ? '尚未备份' : `已 ${days} 天未备份`;
+        html = `
+          <div class="backup-reminder urgent">
+            <div class="text">
+              <strong>${escapeHtml(headline)}</strong> · 数据仅存本地浏览器。
+              <div class="meta">建议每 ${BACKUP_REMIND_DAYS} 天导出一次。清缓存或换设备将丢失数据。</div>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="quick-export-btn">立即导出</button>
+          </div>
+        `;
+      } else {
+        const sinceText = days === 0 ? '今天刚导出' : `${days} 天前导出`;
+        const nextIn = Math.max(0, BACKUP_REMIND_DAYS - days);
+        html = `
+          <div class="backup-reminder">
+            <div class="text">
+              <strong>数据已备份</strong> · ${escapeHtml(sinceText)}。
+              <div class="meta">下次提醒：${nextIn} 天后</div>
+            </div>
+          </div>
+        `;
+      }
+      el.innerHTML = html;
+      const quick = document.getElementById('quick-export-btn');
+      if (quick) quick.addEventListener('click', () => {
+        const ex = document.getElementById('export-btn');
+        if (ex) ex.click();
+      });
     }
     function loadSelectedSkill() {
       try {
@@ -1332,7 +2046,7 @@
       if (STATE.log.length > 500) STATE.log.length = 500;
     }
     function toggleQuest(questId) {
-      const q = DEFAULT_QUESTS.find(x => x.id === questId);
+      const q = QUEST_POOL.find(x => x.id === questId) || DEFAULT_QUESTS.find(x => x.id === questId);
       if (!q) return;
       const qs = STATE.quests[questId];
       if (!qs || qs.dayKey !== todayKey()) STATE.quests[questId] = { done: false, dayKey: todayKey() };
@@ -1372,7 +2086,7 @@
       skillState(skillId).level = 0;
       skillState(skillId).xpInLevel = 0;
       skillState(skillId).practiceCount = 0;
-      for (const q of DEFAULT_QUESTS) {
+      for (const q of QUEST_POOL) {
         if (q.skill === skillId && STATE.quests[q.id]?.done) {
           STATE.quests[q.id] = { done: false, dayKey: todayKey() };
         }
@@ -1407,19 +2121,165 @@
 
     function renderAll() {
       renderTopbarPill();
+      renderTopbarQuote();
       renderSheet();
       renderTodaySummary();
       renderTree();
       renderDetail();
+      renderBrushHeatmap();
       renderBrush();
       renderQuests();
+      renderWeeklyChallenge();
       renderLogTab();
       renderFeatured();
     }
 
+    function renderWeeklyChallenge() {
+      const el = document.getElementById('weekly-mount');
+      if (!el) return;
+      const challenge = getWeeklyChallenge();
+      const claimKey = `${challenge.weekKey}:${challenge.id}`;
+      const isClaimed = !!(STATE.weeklyClaimed && STATE.weeklyClaimed[claimKey]);
+
+      el.innerHTML = `
+        <div class="weekly-card ${challenge.completed && isClaimed ? 'is-done' : (challenge.completed ? '' : '')}">
+          <div class="head">
+            <div class="name">${escapeHtml(challenge.name)}</div>
+            <div class="xp">+${challenge.xp} XP</div>
+          </div>
+          <div class="desc">${escapeHtml(challenge.desc)}</div>
+          <div class="status">${
+            isClaimed              ? '✓ 本周已完成 · 已发放 XP' :
+            challenge.completed    ? '✓ 已达成 · 即将发放 XP' :
+                                     '本周进行中 · 自动判定'
+          }</div>
+        </div>
+      `;
+
+      // 周挑战完成时给一次性 XP（每个 (weekKey, id) 只发一次）
+      if (challenge.completed && !isClaimed) {
+        if (!STATE.weeklyClaimed) STATE.weeklyClaimed = {};
+        STATE.weeklyClaimed[claimKey] = true;
+        const ups = addXp('spirit-1', challenge.xp);
+        logEntry('weekly', 'spirit-1', challenge.xp, `周挑战：${challenge.name}`);
+        if (ups.length) logEntry('levelup', 'spirit-1', 0, `自知 Lv.${ups[ups.length - 1]}`);
+        persist();
+        // spirit-1 升级可能解锁新 quest，重渲染 quest 列表（不调 renderAll 避免递归）
+        if (typeof renderQuests === 'function') renderQuests();
+      }
+
+      const meta = document.getElementById('weekly-meta');
+      if (meta) meta.textContent = isClaimed ? `已完成 · ${challenge.weekKey} 周` : `${challenge.weekKey} 周 · 判定中`;
+    }
+
     function renderTopbarPill() {
-      const el = document.getElementById('topbar-pill');
+      const el = document.getElementById('sidebar-pill');
       if (el) el.textContent = `Lv.${overallLevel()} · 第 ${daysSinceStart()} 天`;
+    }
+
+    // ─── Wikiquote Quote-of-the-Day（JSONP，绕过 CORS）─────────────
+    const MONTH_NAMES_EN = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+    function dateToWikiquoteKey(d) {
+      // "September 7, 2026" — en.wikiquote 子页命名约定
+      return `${MONTH_NAMES_EN[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+    }
+
+    function parseWikiquoteTemplate(wikitext) {
+      if (!wikitext) return null;
+      const m = wikitext.match(/\|\s*quote\s*=\s*([\s\S]*?)\n\s*\|\s*author\s*=\s*([^\n]+)/);
+      if (!m) return null;
+      const clean = (s) => s
+        .replace(/<!--[\s\S]*?-->/g, '')           // HTML 注释
+        .replace(/\[\[([^\]|]+)\|([^\]]+)\]\]/g, '$2')   // [[a|b]] → b
+        .replace(/\[\[([^\]]+)\]\]/g, '$1')               // [[a]] → a
+        .replace(/<br\s*\/?>/gi, ' ')                     // <br> → 空格
+        .replace(/'''?/g, '')                              // 加粗/斜体标记
+        .replace(/\s+/g, ' ')
+        .trim();
+      const text = clean(m[1]);
+      const author = clean(m[2]).replace(/[{}]/g, '');
+      if (!text) return null;
+      return { text, author };
+    }
+
+    function loadJSONP(url) {
+      return new Promise((resolve, reject) => {
+        const cb = 'cq_' + Math.random().toString(36).slice(2);
+        const cleanup = () => {
+          clearTimeout(timer);
+          try { delete window[cb]; } catch (_) {}
+          if (script && script.parentNode) script.parentNode.removeChild(script);
+        };
+        const timer = setTimeout(() => { cleanup(); reject(new Error('timeout')); }, 8000);
+        window[cb] = (data) => { cleanup(); resolve(data); };
+        const script = document.createElement('script');
+        script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cb;
+        script.onerror = () => { cleanup(); reject(new Error('script error')); };
+        document.body.appendChild(script);
+      });
+    }
+
+    let quoteOffset = 0;  // 0 = today, -1 = yesterday, +1 = tomorrow（受未来限制）
+
+    function offsetDate(offsetDays) {
+      const d = new Date();
+      d.setDate(d.getDate() + offsetDays);
+      return d;
+    }
+    function isFutureDate(d) {
+      const today = new Date(); today.setHours(0,0,0,0);
+      const cmp = new Date(d); cmp.setHours(0,0,0,0);
+      return cmp.getTime() > today.getTime();
+    }
+
+    async function fetchWikiquoteQuote(d) {
+      const wqKey = dateToWikiquoteKey(d);
+      const cacheKey = 'changji-wikiquote-' + wqKey;
+      // 1) cache
+      try {
+        const raw = localStorage.getItem(cacheKey);
+        if (raw) {
+          const obj = JSON.parse(raw);
+          if (obj && obj.text) return obj;
+        }
+      } catch (_) {}
+      // 2) JSONP
+      const page = 'Wikiquote:Quote_of_the_day/' + wqKey;
+      const url = 'https://en.wikiquote.org/w/api.php?action=parse&format=json&page=' + encodeURIComponent(page) + '&prop=wikitext';
+      try {
+        const data = await loadJSONP(url);
+        if (data?.error) throw new Error(data.error.code || 'api error');
+        const wikitext = data?.parse?.wikitext?.['*'] || '';
+        const parsed = parseWikiquoteTemplate(wikitext);
+        if (!parsed) throw new Error('parse fail');
+        const obj = { text: parsed.text, author: parsed.author, source: 'wikiquote' };
+        try { localStorage.setItem(cacheKey, JSON.stringify({ ...obj, ts: Date.now() })); } catch (_) {}
+        return obj;
+      } catch (e) {
+        // 3) fallback — 本地 32 条
+        const local = pickDailyQuote(wqKey);
+        return { text: local.text, author: local.author, source: 'local' };
+      }
+    }
+
+    async function renderTopbarQuote() {
+      const el = document.getElementById('topbar-quote');
+      if (!el) return;
+      el.classList.add('is-loading');
+      el.textContent = '…';
+      try {
+        const d = offsetDate(quoteOffset);
+        const q = await fetchWikiquoteQuote(d);
+        const full = q.author ? `「${q.text}」 — ${q.author}` : `「${q.text}」`;
+        el.textContent = full;
+        el.title = full + (q.source === 'local' ? '  (本地回退)' : '');
+        // 同步按钮 enabled 状态
+        const next = document.getElementById('quote-next');
+        if (next) next.disabled = isFutureDate(offsetDate(quoteOffset + 1));
+      } finally {
+        el.classList.remove('is-loading');
+      }
     }
 
     function renderSheet() {
@@ -1495,8 +2355,9 @@
       const cadence = computeWeeklyCadence();
       const lv = overallLevel();
       const today = todayKey();
-      const todayQuests = DEFAULT_QUESTS.filter(q => STATE.quests[q.id]?.done).length;
-      const todayXP = DEFAULT_QUESTS.filter(q => STATE.quests[q.id]?.done).reduce((s, q) => s + q.xp, 0);
+      const daily = pickDailyQuests(today);
+      const todayQuests = daily.filter(q => STATE.quests[q.id]?.done).length;
+      const todayXP = daily.filter(q => STATE.quests[q.id]?.done).reduce((s, q) => s + q.xp, 0);
       const hasBrush = !!STATE.dailyBrush[today];
 
       mount.innerHTML = `
@@ -1750,61 +2611,115 @@
       `;
     }
 
+    function getBrush(dateKey) {
+      const v = STATE.dailyBrush[dateKey];
+      if (!v) return null;
+      if (typeof v === 'string') return { text: v, tags: [] };
+      return { text: v.text || '', tags: Array.isArray(v.tags) ? v.tags : [] };
+    }
+
+    function parseTagInput(s) {
+      // 支持空格 / 中文逗号 / 英文逗号分隔
+      return String(s || '')
+        .split(/[\s,，]+/)
+        .map(t => t.replace(/^#+/, '').trim())
+        .filter(Boolean)
+        .slice(0, 8);
+    }
+
     function renderBrush() {
       const mount = document.getElementById('brush-mount');
       if (!mount) return;
       const today = todayKey();
-      const saved = STATE.dailyBrush[today] || '';
-      const history = Object.entries(STATE.dailyBrush)
-        .filter(([d]) => d !== today && /^\d{4}-\d{2}-\d{2}$/.test(d))
-        .sort(([a], [b]) => b.localeCompare(a)).slice(0, 6);
-      const count = Object.keys(STATE.dailyBrush).filter(d => d !== today).length;
-      const totalNow = count + (saved ? 1 : 0);
+      const saved = getBrush(today);
+      const history = Object.keys(STATE.dailyBrush)
+        .filter(d => d !== today && /^\d{4}-\d{2}-\d{2}$/.test(d))
+        .sort((a, b) => b.localeCompare(a)).slice(0, 6);
+      const totalCount = Object.keys(STATE.dailyBrush).filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d)).length;
       const countEl = document.getElementById('brush-count');
-      if (countEl) countEl.textContent = `累计 ${totalNow} 笔`;
+      if (countEl) countEl.textContent = `累计 ${totalCount} 笔`;
 
-      mount.innerHTML = saved
-        ? `<div class="brush-today">
-            <div class="text">${escapeHtml(saved)}</div>
-            <div class="meta-line">
+      const tagsHtml = (tags) => tags && tags.length
+        ? `<div class="brush-tags">${tags.map(t => `<span class="tag">#${escapeHtml(t)}</span>`).join('')}</div>`
+        : '';
+
+      const tagInputHtml = `<input class="brush-tag-input" data-input="brush-tags" type="text" placeholder="标签（空格分隔，如：晨间 情绪 学习）" maxlength="80" />`;
+
+      if (saved) {
+        mount.innerHTML = `
+          <div class="brush-today">
+            <div class="text">${escapeHtml(saved.text)}</div>
+            ${tagsHtml(saved.tags)}
+            <div class="meta-line" style="margin-top:8px;">
               <span class="meta" style="font-family: var(--font-mono); font-size: 10px; color: var(--muted);">今日一笔 · 已保存</span>
               <button class="btn btn-ghost btn-sm" data-action="brush-clear">改写</button>
             </div>
-          </div>`
-        : `<div class="brush-card">
-            <textarea class="brush-input" data-input="brush" placeholder="今天我做了一次「______」会做的事。" maxlength="240" rows="2" aria-label="今日一笔"></textarea>
+            ${tagInputHtml}
             <div class="brush-actions">
-              <button class="btn btn-primary btn-sm" data-action="brush-save">保存</button>
-              <span class="brush-status">${count === 0 ? '这是你的第一笔' : `已有 ${count} 笔`} · ⌘/Ctrl+Enter</span>
+              <button class="btn btn-primary btn-sm" data-action="brush-save">保存（含标签）</button>
+              <span class="brush-status">⌘/Ctrl+Enter</span>
             </div>
           </div>`;
+      } else {
+        mount.innerHTML = `
+          <div class="brush-card">
+            <textarea class="brush-input" data-input="brush" placeholder="今天我做了一次「______」会做的事。" maxlength="240" rows="2" aria-label="今日一笔"></textarea>
+            ${tagInputHtml}
+            <div class="brush-actions">
+              <button class="btn btn-primary btn-sm" data-action="brush-save">保存</button>
+              <span class="brush-status">${totalCount === 0 ? '这是你的第一笔' : `已有 ${totalCount} 笔`} · ⌘/Ctrl+Enter</span>
+            </div>
+          </div>`;
+      }
 
       if (history.length) {
         const hist = document.createElement('div');
         hist.className = 'brush-history';
-        hist.innerHTML = history.map(([d, text]) => `
-          <div class="brush-history-row">
-            <span class="date">${escapeHtml(formatBrushDate(d))}</span>
-            <span class="text">${escapeHtml(text)}</span>
-          </div>
-        `).join('');
+        hist.innerHTML = history.map(d => {
+          const b = getBrush(d);
+          if (!b) return '';
+          const tagsRow = b.tags.length
+            ? `<div class="tags">${b.tags.map(t => `<span class="tag">#${escapeHtml(t)}</span>`).join('')}</div>`
+            : '';
+          return `
+            <div class="brush-history-row">
+              <span class="date">${escapeHtml(formatBrushDate(d))}</span>
+              <div>
+                <span class="text">${escapeHtml(b.text)}</span>
+                ${tagsRow}
+              </div>
+            </div>
+          `;
+        }).join('');
         mount.appendChild(hist);
       }
     }
+
     function formatBrushDate(d) {
       const [, m, day] = d.split('-');
       return `${parseInt(m, 10)}月${parseInt(day, 10)}日`;
     }
+
     function saveBrush() {
       const ta = document.querySelector('[data-input="brush"]');
-      if (!ta) return;
-      const text = ta.value.trim();
+      const tagInput = document.querySelector('[data-input="brush-tags"]');
+      let text;
+      if (ta) {
+        text = ta.value.trim();
+      } else {
+        // 编辑模式：保留旧文本，只更新标签
+        const existing = getBrush(todayKey());
+        text = existing ? existing.text : '';
+      }
       if (!text) return;
-      STATE.dailyBrush[todayKey()] = text;
+      const tags = tagInput ? parseTagInput(tagInput.value) : (getBrush(todayKey())?.tags || []);
+      STATE.dailyBrush[todayKey()] = { text, tags };
       persist();
       renderBrush();
       renderTodaySummary();
+      renderBrushHeatmap();
     }
+
     function clearBrushToday() {
       const today = todayKey();
       if (STATE.dailyBrush[today]) {
@@ -1812,35 +2727,65 @@
         persist();
         renderBrush();
         renderTodaySummary();
+        renderBrushHeatmap();
       }
+    }
+
+    function renderBrushHeatmap() {
+      const mount = document.getElementById('heatmap-mount');
+      if (!mount) return;
+      const DAYS = 90;
+      const today = todayKey();
+      const cells = [];
+      const todayParts = today.split('-').map(Number);
+      const todayDate = new Date(todayParts[0], todayParts[1] - 1, todayParts[2]);
+      let writtenDays = 0;
+      for (let i = DAYS - 1; i >= 0; i--) {
+        const d = new Date(todayDate);
+        d.setDate(d.getDate() - i);
+        const k = `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+        const b = getBrush(k);
+        if (b) writtenDays++;
+        const isToday = k === today;
+        cells.push(`<div class="brush-heatmap-cell ${b ? 'has-text' : ''} ${isToday ? 'today' : ''}" title="${escapeHtml(k)}${b ? '：' + escapeHtml(b.text.slice(0, 40)) : ''}"></div>`);
+      }
+      mount.innerHTML = `<div class="brush-heatmap">${cells.join('')}</div>`;
+      const meta = document.getElementById('heatmap-meta');
+      if (meta) meta.textContent = `近 ${DAYS} 天 · ${writtenDays} 笔`;
     }
 
     function renderQuests() {
       const el = document.getElementById('quest-list');
       const today = todayKey();
-      for (const q of DEFAULT_QUESTS) {
-        if (STATE.quests[q.id]?.dayKey !== today) STATE.quests[q.id] = { done: false, dayKey: today };
+      const daily = pickDailyQuests(today);
+      for (const q of daily) {
+        if (!STATE.quests[q.id] || STATE.quests[q.id].dayKey !== today) {
+          STATE.quests[q.id] = { done: false, dayKey: today };
+        }
       }
-      el.innerHTML = DEFAULT_QUESTS.map(q => {
+      el.innerHTML = daily.map(q => {
         const skill = findSkill(q.skill);
         const entry = STATE.quests[q.id];
         const done = !!(entry && entry.done);
         const locked = !prereqMet(q.skill);
+        const diffBadge = q.difficulty === 1 ? '<span class="meta" style="color:var(--muted);">入门</span>'
+                        : q.difficulty >= 3 ? '<span class="meta" style="color:var(--fg);">🔥 高难度</span>'
+                        : '';
         return `
           <div class="quest ${done ? 'is-done' : ''}" data-id="${q.id}">
             <button class="quest-check ${done ? 'is-done' : ''}" data-quest-toggle="${q.id}" ${locked ? 'disabled title="前置未达成"' : ''} aria-pressed="${done}" aria-label="${escapeHtml(q.name)}"></button>
             <div class="quest-body">
               <div class="name">${escapeHtml(q.name)}${locked ? ' <span class="meta">（前置未达成）</span>' : ''}</div>
-              <div class="meta">${escapeHtml(skill.branch)} · ${escapeHtml(skill.name)}</div>
+              <div class="meta">${escapeHtml(skill.branch)} · ${escapeHtml(skill.name)}${diffBadge ? ' · ' + diffBadge : ''}</div>
             </div>
             <div class="quest-xp">+${q.xp}</div>
           </div>
         `;
       }).join('') + `<div class="quest-progress">进度</div>`;
-      const doneCount = DEFAULT_QUESTS.filter(q => STATE.quests[q.id]?.done).length;
-      const xp = DEFAULT_QUESTS.filter(q => STATE.quests[q.id]?.done).reduce((s, q) => s + q.xp, 0);
+      const doneCount = daily.filter(q => STATE.quests[q.id]?.done).length;
+      const xp = daily.filter(q => STATE.quests[q.id]?.done).reduce((s, q) => s + q.xp, 0);
       const header = document.getElementById('quest-progress');
-      if (header) header.textContent = `${doneCount} / 5 完成 · +${xp} XP`;
+      if (header) header.textContent = `${doneCount} / ${QUEST_TARGET_PER_DAY} 完成 · +${xp} XP`;
     }
 
     function renderLogTab() {
@@ -1875,6 +2820,9 @@
       if (e.kind === 'reset') {
         return `<div class="log-row"><span class="date">${escapeHtml(formatDate(e.ts))}</span><div><h3>↺ ${escapeHtml(e.name)}</h3><p class="sub">重置</p></div><span class="delta">—</span></div>`;
       }
+      if (e.kind === 'weekly') {
+        return `<div class="log-row"><span class="date">${escapeHtml(formatDate(e.ts))}</span><div><h3>★ ${escapeHtml(e.name)}</h3><p class="sub">周挑战 · ${escapeHtml(sub)}</p></div><span class="delta up">${e.xp}</span></div>`;
+      }
       return `<div class="log-row"><span class="date">${escapeHtml(formatDate(e.ts))}</span><div><h3>${escapeHtml(e.name)}</h3><p class="sub">${escapeHtml(sub)}</p></div><span class="delta up">${e.xp}</span></div>`;
     }
     function renderFullLog() {
@@ -1906,11 +2854,11 @@
       }).join('');
     }
 
-    function renderChangelog() {
-      const mount = document.getElementById('changelog-mount');
-      if (!mount) return;
-      mount.innerHTML = CHANGELOG_ENTRIES.map(e => `
-        <article class="cl-entry">
+    function renderChangelogModal() {
+      const modalBody = document.getElementById('changelog-modal-body');
+      if (!modalBody) return;
+      modalBody.innerHTML = CHANGELOG_ENTRIES.map(e => `
+        <article class="cl-entry" style="margin-bottom: 8px;">
           <header class="cl-head">
             <span class="cl-version">v${escapeHtml(e.version)}</span>
             <span class="cl-date">${escapeHtml(e.date)}</span>
@@ -1926,27 +2874,6 @@
           </ul>
         </article>
       `).join('');
-
-      const modalBody = document.getElementById('changelog-modal-body');
-      if (modalBody) {
-        modalBody.innerHTML = CHANGELOG_ENTRIES.map(e => `
-          <article class="cl-entry" style="margin-bottom: 8px;">
-            <header class="cl-head">
-              <span class="cl-version">v${escapeHtml(e.version)}</span>
-              <span class="cl-date">${escapeHtml(e.date)}</span>
-            </header>
-            <div class="cl-label">${escapeHtml(e.label)}</div>
-            <ul class="cl-changes">
-              ${e.changes.map(c => `
-                <li class="cl-change">
-                  <span class="badge ${escapeHtml(c.kind)}">${escapeHtml(kindLabel(c.kind))}</span>
-                  <span>${escapeHtml(c.text)}</span>
-                </li>
-              `).join('')}
-            </ul>
-          </article>
-        `).join('');
-      }
     }
 
     // ════════════════════════════════════════════════════════════════
@@ -1969,7 +2896,7 @@
     }
 
     function bindEvents() {
-      // tab buttons (bottom tabbar + character pill)
+      // tab buttons (sidebar nav)
       document.querySelectorAll('[data-tab-target]').forEach(btn => {
         btn.addEventListener('click', () => selectTab(btn.dataset.tabTarget));
       });
@@ -2063,26 +2990,137 @@
       // export / import / reset
       const ex = document.getElementById('export-btn');
       const im = document.getElementById('import-btn');
+      const sh = document.getElementById('share-btn');
       const rs = document.getElementById('reset-btn');
+      const fileInput = document.getElementById('import-file');
+      const importText = document.getElementById('import-text');
+      const importPasteBtn = document.getElementById('import-paste-btn');
+      const importClearBtn = document.getElementById('import-clear-btn');
+
+      function afterImport(successMsg) {
+        markBacked();
+        renderBackupReminder();
+        alert(successMsg || '导入成功。');
+      }
+
+      // 下载 .json 文件
       if (ex) ex.addEventListener('click', () => {
-        const json = exportState();
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(json).then(
-            () => alert('已复制到剪贴板。'),
-            () => prompt('复制下面这段 JSON 备份：', json)
-          );
-        } else {
-          prompt('复制下面这段 JSON 备份：', json);
+        try {
+          const json = exportState();
+          const date = todayKey();
+          const blob = new Blob([json], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `changji-${date}.json`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(() => URL.revokeObjectURL(url), 1500);
+          markBacked();
+          renderBackupReminder();
+        } catch (e) {
+          alert('导出失败：' + e.message);
         }
       });
-      if (im) im.addEventListener('click', () => {
-        const json = prompt('粘贴之前导出的 JSON：');
-        if (!json) return;
-        try { importState(json); alert('导入成功。'); }
-        catch (e) { alert('导入失败：' + e.message); }
+
+      // 复制分享链接（base64 编码到 URL hash）
+      if (sh) sh.addEventListener('click', () => {
+        try {
+          const json = exportState();
+          // 兼容中文：encodeURIComponent + unescape
+          const b64 = btoa(unescape(encodeURIComponent(json)));
+          const url = `${location.origin}${location.pathname}#share=${b64}`;
+          const fallbackCopy = () => {
+            const ta = document.createElement('textarea');
+            ta.value = url; document.body.appendChild(ta);
+            ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+          };
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url).then(
+              () => { markBacked(); renderBackupReminder(); alert('分享链接已复制到剪贴板。\n\n任何人打开此链接都会导入你的进度。'); },
+              () => { fallbackCopy(); markBacked(); renderBackupReminder(); alert('分享链接已复制（回退方式）。'); }
+            );
+          } else {
+            fallbackCopy();
+            markBacked();
+            renderBackupReminder();
+            alert('分享链接已复制。');
+          }
+        } catch (e) {
+          alert('生成分享链接失败：' + e.message);
+        }
       });
+
+      // 选择文件 → file input
+      if (im && fileInput) im.addEventListener('click', () => fileInput.click());
+      if (fileInput) fileInput.addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try { importState(reader.result); afterImport(); }
+          catch (err) { alert('导入失败：' + err.message); }
+        };
+        reader.onerror = () => alert('读取文件失败。');
+        reader.readAsText(file);
+        e.target.value = '';
+      });
+
+      // 拖放：textarea 高亮
+      if (importText) {
+        importText.addEventListener('dragover', (e) => { e.preventDefault(); importText.classList.add('is-dragover'); });
+        importText.addEventListener('dragleave', () => importText.classList.remove('is-dragover'));
+        importText.addEventListener('drop', (e) => {
+          e.preventDefault();
+          importText.classList.remove('is-dragover');
+          const file = e.dataTransfer.files && e.dataTransfer.files[0];
+          if (!file) {
+            // 拖入的是文本（不是文件）— 写入 textarea
+            const text = e.dataTransfer.getData('text');
+            if (text) importText.value = text;
+            return;
+          }
+          if (!/\.json$/i.test(file.name) && file.type !== 'application/json') {
+            alert('请提供 .json 文件。');
+            return;
+          }
+          const reader = new FileReader();
+          reader.onload = () => {
+            try { importState(reader.result); afterImport(); }
+            catch (err) { alert('导入失败：' + err.message); }
+          };
+          reader.readAsText(file);
+        });
+      }
+
+      // 粘贴文本框 → 从粘贴恢复
+      if (importPasteBtn) importPasteBtn.addEventListener('click', () => {
+        if (!importText || !importText.value.trim()) { alert('请先粘贴 JSON 字符串。'); return; }
+        try { importState(importText.value); importText.value = ''; afterImport(); }
+        catch (err) { alert('导入失败：' + err.message); }
+      });
+
+      // 清空粘贴框
+      if (importClearBtn) importClearBtn.addEventListener('click', () => {
+        if (importText) importText.value = '';
+      });
+
       if (rs) rs.addEventListener('click', () => {
         if (confirm('确认清空全部进度，从零开始？此操作不可撤销（建议先导出备份）。')) resetAll();
+      });
+
+      // quote prev/next — 切换日期（受未来日期限制）
+      const quotePrev = document.getElementById('quote-prev');
+      const quoteNext = document.getElementById('quote-next');
+      if (quotePrev) quotePrev.addEventListener('click', () => {
+        quoteOffset -= 1;
+        renderTopbarQuote();
+      });
+      if (quoteNext) quoteNext.addEventListener('click', () => {
+        if (isFutureDate(offsetDate(quoteOffset + 1))) return;
+        quoteOffset += 1;
+        renderTopbarQuote();
       });
     }
 
@@ -2091,6 +3129,7 @@
       if (!m) return;
       m.hidden = false;
       m.classList.add('is-open');
+      if (name === 'settings') renderBackupReminder();
       const close = m.querySelector('[data-modal-close]');
       if (close) close.focus();
     }
@@ -2125,13 +3164,35 @@
     }
 
     function init() {
-      loadState();
+      // 分享链接（#share=base64）优先于本地数据 — 一次性导入并清掉 hash
+      const sharedLoaded = tryLoadShare();
+      if (!sharedLoaded) loadState();
       loadSelectedSkill();
+      renderChangelogModal();
       const hashId = (location.hash || '').replace('#', '');
       const initialTab = VALID_TABS.includes(hashId) ? hashId : DEFAULT_TAB;
       renderAll();
       selectTab(initialTab, { updateHash: false });
       bindEvents();
+      if (sharedLoaded) {
+        setTimeout(() => alert('已从分享链接导入进度数据。'), 80);
+      }
+    }
+
+    function tryLoadShare() {
+      const hash = location.hash || '';
+      const m = hash.match(/^#share=(.+)$/);
+      if (!m) return false;
+      try {
+        const json = decodeURIComponent(escape(atob(m[1])));
+        importState(json);  // 校验 + persist
+        history.replaceState(null, '', location.pathname + location.search);
+        return true;
+      } catch (e) {
+        console.warn('share load failed:', e);
+        history.replaceState(null, '', location.pathname + location.search);
+        return false;
+      }
     }
 
     // REPL
