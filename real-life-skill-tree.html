@@ -1909,6 +1909,7 @@
 
     function renderChangelog() {
       const mount = document.getElementById('changelog-mount');
+      if (!mount) return;
       mount.innerHTML = CHANGELOG_ENTRIES.map(e => `
         <article class="cl-entry">
           <header class="cl-head">
