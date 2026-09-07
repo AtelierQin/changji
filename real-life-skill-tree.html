@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  长技 · 凡人天梯  v3.0  (tabbed layout)
+  长技 · 凡人天梯  v1.2.8  (tabbed layout)
   5 tabs · single file · URL hash routing
   Tabs: 角色 / 树 / 今日 / 日志 / 方法
   License: CC BY-NC 4.0 — see LICENSE
@@ -75,15 +75,6 @@
       --radius:   8px;
 
       --topbar-h: 72px;
-    }
-
-    @supports not (color: color-mix(in oklch, #000 50%, transparent)) {
-      :root {
-        --accent-soft:   rgba(0, 0, 0, 0.06);
-        --accent-faint:  rgba(0, 0, 0, 0.03);
-        --fg-soft:       rgba(0, 0, 0, 0.06);
-        --topbar-bg:     rgba(255, 255, 255, 0.92);
-      }
     }
 
     *, *::before, *::after { box-sizing: border-box; }
@@ -162,6 +153,47 @@
     .quote-btn:hover:not([disabled]) { color: var(--fg); border-color: var(--fg); background: var(--surface); }
     .quote-btn[disabled] { opacity: 0.35; cursor: not-allowed; }
 
+    /* ─── cloud sync (settings modal) ──────────────────────────────── */
+    .sync-block {
+      margin-top: var(--gap-sm);
+      padding-top: var(--gap-md);
+      border-top: 1px solid var(--border);
+    }
+    .sync-head {
+      display: flex; align-items: baseline; justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .sync-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .sync-status {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .sync-status.is-on { color: var(--fg); }
+    .sync-user {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 0;
+      font-size: 13px;
+    }
+    .sync-avatar {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+    }
+    .sync-user .name { font-weight: 500; }
+    .sync-user .login { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+    .sync-actions {
+      display: flex; gap: 6px; flex-wrap: wrap;
+      padding-top: 6px;
+    }
+
     /* ─── MAIN area + tab panes ────────────────────────────────────── */
     .app-layout {
       display: grid;
@@ -180,6 +212,14 @@
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(4px); }
       to   { opacity: 1; transform: translateY(0); }
+    }
+    .pane-title {
+      font-family: var(--font-display);
+      font-size: var(--fs-h2);
+      font-weight: 600;
+      line-height: 1.18;
+      letter-spacing: -0.015em;
+      margin: 0 0 var(--gap-md);
     }
 
     /* ─── SIDEBAR (left vertical nav) ─────────────────────────────── */
@@ -1030,10 +1070,7 @@
          TAB · 角色
          ═══════════════════════════════════════════════════════════════ -->
     <section class="tab-pane" id="pane-character" data-tab="character">
-      <div style="margin-bottom: var(--gap-md);">
-        <p class="eyebrow">角色</p>
-        <h2>此刻的你</h2>
-      </div>
+      <h2 class="pane-title">此刻的你</h2>
       <div id="sheet-mount"></div>
     </section>
 
@@ -1042,10 +1079,7 @@
          ═══════════════════════════════════════════════════════════════ -->
     <section class="tab-pane" id="pane-tree" data-tab="tree">
       <div class="tree-header">
-        <div>
-          <p class="eyebrow">技能树</p>
-          <h2>五脉二十技，看得见的来路。</h2>
-        </div>
+        <h2 class="pane-title">五脉二十技，看得见的来路。</h2>
         <div class="tree-legend">
           <span class="tree-legend-item"><span class="tree-legend-dot filled"></span> 已登顶</span>
           <span class="tree-legend-item"><span class="tree-legend-dot"></span> 修习中</span>
@@ -1063,10 +1097,7 @@
          TAB · 今日
          ═══════════════════════════════════════════════════════════════ -->
     <section class="tab-pane" id="pane-today" data-tab="today">
-      <div style="margin-bottom: var(--gap-md);">
-        <p class="eyebrow">今日</p>
-        <h2>今天你又做了一次「你」会做的事。</h2>
-      </div>
+      <h2 class="pane-title">今天你又做了一次「你」会做的事。</h2>
       <div id="today-summary-mount"></div>
       <div class="panel">
         <div class="panel-title">
@@ -1107,10 +1138,7 @@
          TAB · 日志
          ═══════════════════════════════════════════════════════════════ -->
     <section class="tab-pane" id="pane-log" data-tab="log">
-      <div style="margin-bottom: var(--gap-md);">
-        <p class="eyebrow">日志</p>
-        <h2>近 30 日的修习痕迹。</h2>
-      </div>
+      <h2 class="pane-title">近 30 日的修习痕迹。</h2>
       <div class="log-stats" id="log-stats-mount"></div>
       <div class="panel">
         <div class="panel-title">
@@ -1126,10 +1154,7 @@
          TAB · 方法
          ═══════════════════════════════════════════════════════════════ -->
     <section class="tab-pane" id="pane-method" data-tab="method">
-      <div style="margin-bottom: var(--gap-md);">
-        <p class="eyebrow">方法</p>
-        <h2>这一套，不是凭感觉。</h2>
-      </div>
+      <h2 class="pane-title">这一套，不是凭感觉。</h2>
       <div class="method">
         <div class="method-steps">
           <div class="method-step">
@@ -1240,6 +1265,13 @@
           </div>
           <button class="btn btn-ghost btn-sm" id="reset-btn">重置</button>
         </div>
+        <div class="sync-block">
+          <div class="sync-head">
+            <span class="sync-eyebrow">云同步</span>
+            <span class="sync-status" id="sync-status">未连接</span>
+          </div>
+          <div id="sync-mount"></div>
+        </div>
         <div class="settings-row">
           <div>
             <div class="label-main">关于</div>
@@ -1285,9 +1317,15 @@
     const SCHEMA_VERSION = 1;
     const STORAGE_KEY = 'changji-state';
     const STORAGE_KEY_SEL = 'changji-skill';
+    const STORAGE_KEY_SESSION = 'changji-session';
+    // Cloudflare Worker 云同步后端（部署后改成你的真实 URL）
+    const SYNC_SERVER = '';  // 例：'https://changji-sync.YOUR-SUBDOMAIN.workers.dev'
+    // 迁移机制说明：
+    // 每个 entry: key = 起始版本号，fn 把 state 从 key 升到 key+1
+    // loadState / canonicalizeState 用 for (v = fromVer; v < SCHEMA_VERSION; v++) 链式调用
+    // 当前 SCHEMA_VERSION=1，没有真正的"v→v+1" 迁移；下面这条 fn 只在 fromVer < 1（即旧版无 version 字段）时跑
+    // — 用于给缺字段的旧数据补默认值。未来 SCHEMA_VERSION=2 时加 entry 2。
     const SCHEMA_MIGRATIONS = {
-      // 每个 entry: key = 起始版本号，fn 把 state 从 key 升到 key+1
-      // 当前是 v1 → v1（字段补全：新版本加的字段给旧数据默认值）
       1: (s) => {
         if (!('dailyQuests' in s)) s.dailyQuests = null;
         if (!('weeklyClaimed' in s)) s.weeklyClaimed = {};
@@ -1379,15 +1417,26 @@
       { id: 'spirit-4', name: '意义',   en: 'Meaning',        branch: 'spirit', row: 3, desc: '找到长程驱动的源头。' },
     ];
 
-    const SYNERGIES = {
-      'body-1':   ['专注'],
-      'mind-1':   ['体能', '创造'],
-      'mind-4':   ['写作'],
-      'skill-2':  ['创造'],
-      'social-1': ['沟通'],
-      'spirit-1': ['情绪', '决策'],
-      'spirit-2': ['自知'],
-    };
+    // 协同关系 — 单一 source of truth，同时驱动 SVG 虚线 和 详情面板文字列表
+    // （无向 pair：order 不影响渲染，detail 会同时显示两端）
+    // v1.2.4 删除：spirit-1 ↔ spirit-2（同列相邻，脊柱已表达递进）
+    const SYNERGY_PAIRS = [
+      ['body-1',   'mind-1'  ],  // 体能 ↔ 专注  — 有氧运动提升执行功能
+      ['mind-1',   'mind-4'  ],  // 专注 ↔ 创造  — 深度专注是创造前提
+      ['mind-4',   'skill-2' ],  // 创造 ↔ 写作  — 创造力通过写作打磨
+      ['skill-1',  'social-1'],  // 沟通 ↔ 同理  — 表达驱动倾听，倾听滋养表达
+      ['spirit-1', 'skill-4' ],  // 自知 ↔ 决策  — 知道自己要什么才好选
+    ];
+
+    // 由 SYNERGY_PAIRS 派生的查找表 — 旧代码通过 SYNERGIES[id] 拿名字
+    const SYNERGIES = {};
+    for (const [a, b] of SYNERGY_PAIRS) {
+      const sa = SKILLS.find(s => s.id === a);
+      const sb = SKILLS.find(s => s.id === b);
+      if (!sa || !sb) continue;
+      (SYNERGIES[a] = SYNERGIES[a] || []).push(sb.name);
+      (SYNERGIES[b] = SYNERGIES[b] || []).push(sa.name);
+    }
 
     const PREREQS = {
       'body-1':   [{ skill: 'body-3', minLv: 1 }],
@@ -1464,12 +1513,15 @@
     ];
 
     // 周挑战 — 自动判定，完成后一次性发放 XP
+    // xpTarget: 把 XP 发到哪个脉的哪项代表技能 — 避免所有奖励都堆到 spirit-1
+    // xpFallback: 当 xpTarget 没记录可参考时（如 cross-3 找不到脉）的备选
     const WEEKLY_CHALLENGES = [
       {
         id: 'cross-3',
         name: '三脉齐动',
         desc: '本周在 3 个不同脉各完成至少 1 个 quest',
         xp: 30,
+        xpTarget: 'auto',  // 动态：本周实际涉及的脉（每脉加少量 XP）
         check: (state) => {
           const cutoff = Date.now() - 7 * 86400000;
           const branches = new Set();
@@ -1487,6 +1539,7 @@
         name: '三天连修',
         desc: '本周连续 3 天都有记录',
         xp: 25,
+        xpTarget: 'spirit-1',  // 节奏感 → 自知
         check: (state) => {
           const cutoff = Date.now() - 7 * 86400000;
           const days = new Set();
@@ -1512,6 +1565,7 @@
         name: '本周升阶',
         desc: '本周至少 1 项技能升阶',
         xp: 30,
+        xpTarget: 'skill-3',   // 对进步的觉察 → 学习
         check: (state) => {
           const cutoff = Date.now() - 7 * 86400000;
           return state.log.some(e => e.ts >= cutoff && e.kind === 'levelup');
@@ -1522,6 +1576,7 @@
         name: '百 XP',
         desc: '本周累计获得 100 XP',
         xp: 20,
+        xpTarget: 'mind-1',    // 持续练习的总和 → 专注
         check: (state) => {
           const cutoff = Date.now() - 7 * 86400000;
           return state.log.filter(e => e.ts >= cutoff).reduce((s, e) => s + (e.xp || 0), 0) >= 100;
@@ -1532,6 +1587,7 @@
         name: '五日笔触',
         desc: '本周 5 天都有写「今日一笔」',
         xp: 20,
+        xpTarget: 'spirit-2',  // 自我表达 → 情绪
         check: (state) => {
           const cutoff = Date.now() - 7 * 86400000;
           let count = 0;
@@ -1544,6 +1600,27 @@
         },
       },
     ];
+
+    // 根据 xpTarget 解析成具体的技能 ID 列表
+    // auto: 本周实际涉及的脉，每脉给一项代表技能加分（XP 平均分）
+    function resolveWeeklyTargets(challenge) {
+      if (challenge.xpTarget !== 'auto') return [challenge.xpTarget];
+      const cutoff = Date.now() - 7 * 86400000;
+      const usedBranches = new Set();
+      for (const e of STATE.log) {
+        if (e.ts < cutoff) continue;
+        if (e.kind !== 'quest' && e.kind !== 'practice' && e.kind !== 'weekly') continue;
+        const sk = findSkill(e.skill);
+        if (sk) usedBranches.add(sk.branch);
+      }
+      const ids = [];
+      for (const br of usedBranches) {
+        // 取该脉第一个非 MAX 技能作为代表
+        const rep = SKILLS.find(s => s.branch === br && (STATE.skills[s.id]?.level || 0) < MAX_LEVEL);
+        if (rep) ids.push(rep.id);
+      }
+      return ids.length ? ids : ['spirit-1'];  // 退化
+    }
 
     function hashString(s) {
       let h = 0;
@@ -1840,10 +1917,18 @@
       }
       if (!parsed || parsed.schema !== 'changji-state') return;
 
+      STATE = canonicalizeState(parsed);
+      // 迁移完成，持久化（升级版本号/补全字段）
+      persist();
+    }
+
+    // 把任意 (旧/新) 输入归一化成当前 SCHEMA 的 canonical state。
+    // 用于 loadState / importState 两处，保证两条路径行为一致。
+    function canonicalizeState(input) {
       const def = createDefaultState();
       // 尽力兼容：旧/新版本都接受，用迁移链补全字段
-      const fromVer = (typeof parsed.version === 'number') ? parsed.version : SCHEMA_VERSION;
-      let migrated = parsed;
+      const fromVer = (typeof input.version === 'number') ? input.version : SCHEMA_VERSION;
+      let migrated = input;
       try {
         for (let v = fromVer; v < SCHEMA_VERSION; v++) {
           const fn = SCHEMA_MIGRATIONS[v];
@@ -1851,7 +1936,7 @@
         }
       } catch (e) { console.warn('migration failed:', e); }
 
-      STATE = {
+      const state = {
         schema: 'changji-state',
         version: SCHEMA_VERSION,
         startedAt: migrated.startedAt || def.startedAt,
@@ -1864,12 +1949,12 @@
         weeklyClaimed: (migrated.weeklyClaimed && typeof migrated.weeklyClaimed === 'object') ? migrated.weeklyClaimed : {},
         lastBackupAt: (typeof migrated.lastBackupAt === 'number') ? migrated.lastBackupAt : 0,
       };
+      // 跨日 quest 重置
       const today = todayKey();
-      for (const q of Object.keys(STATE.quests)) {
-        if (STATE.quests[q].dayKey !== today) STATE.quests[q] = { done: false, dayKey: today };
+      for (const q of Object.keys(state.quests)) {
+        if (state.quests[q].dayKey !== today) state.quests[q] = { done: false, dayKey: today };
       }
-      // 迁移完成，持久化（升级版本号/补全字段）
-      persist();
+      return state;
     }
 
     function daysSinceBackup() {
@@ -1954,9 +2039,12 @@
     function skillState(id) {
       return STATE.skills[id] || (STATE.skills[id] = { xpInLevel: 0, level: 0, lastChanged: 0, practiceCount: 0 });
     }
+    // 返回「从当前等级升到下一级所需的 XP」（不是累计阈值）。
+    // LV_THRESH 数组本身存的是累计阈值（Lv.0=0, Lv.1=100, Lv.2=300, ...），
+    // 所以 delta 是 LV_THRESH[level+1] - LV_THRESH[level]。
     function xpRequiredForLevel(level) {
-      if (level >= MAX_LEVEL) return LV_THRESH[MAX_LEVEL];
-      return LV_THRESH[level] || 0;
+      if (level >= MAX_LEVEL) return LV_THRESH[MAX_LEVEL] - LV_THRESH[MAX_LEVEL - 1];
+      return LV_THRESH[level + 1] - LV_THRESH[level];
     }
     function prereqMet(skillId) {
       const reqs = PREREQS[skillId];
@@ -1989,7 +2077,8 @@
         if (s.level > 0) unlocked++;
         if (s.level >= MAX_LEVEL) mastered++;
       }
-      return { totalXP: lvXp, unlocked, mastered, maxXP: LV_THRESH[MAX_LEVEL] + 100 };
+      // totalXP 是 20 项技能的累计进度之和；maxXP 也按 20 项都登顶算
+      return { totalXP: lvXp, unlocked, mastered, maxXP: LV_THRESH[MAX_LEVEL] * SKILLS.length };
     }
     function computeWeeklyCadence() {
       const days = new Set();
@@ -2043,11 +2132,23 @@
     }
     function logEntry(kind, skill, xp, name) {
       STATE.log.unshift({ ts: Date.now(), kind, skill, xp, name });
+      // 上限 500 条：超过则丢最旧的（unshift 到前面，长度截断尾部）
+      // localStorage 5-10MB 限制远未触及；500 是 UI 渲染的合理上限
+      // （log tab 只显示前 10 条，full modal 全部显示）
       if (STATE.log.length > 500) STATE.log.length = 500;
     }
+    // quest 切换冷却 — 1.5s 内不能重复 toggle 同一 quest，防止无意义刷日志
+    const QUEST_TOGGLE_COOLDOWN_MS = 1500;
+    const _questToggleLast = new Map();  // questId → timestamp
+
     function toggleQuest(questId) {
       const q = QUEST_POOL.find(x => x.id === questId) || DEFAULT_QUESTS.find(x => x.id === questId);
       if (!q) return;
+      // 冷却检查（仅对"已经完成 → 取消 → 再勾"这种刷日志路径生效）
+      const last = _questToggleLast.get(questId) || 0;
+      if (Date.now() - last < QUEST_TOGGLE_COOLDOWN_MS) return;
+      _questToggleLast.set(questId, Date.now());
+
       const qs = STATE.quests[questId];
       if (!qs || qs.dayKey !== todayKey()) STATE.quests[questId] = { done: false, dayKey: todayKey() };
       const entry = STATE.quests[questId];
@@ -2109,8 +2210,9 @@
         try { obj = JSON.parse(jsonOrObj); } catch (e) { throw new Error('import: 不是合法 JSON'); }
       }
       if (!obj || obj.schema !== 'changji-state') throw new Error('import: schema 不匹配');
-      if (obj.version !== SCHEMA_VERSION) throw new Error(`import: 版本不匹配`);
-      STATE = obj;
+      // 走和 loadState 一致的迁移链：旧版本自动升级、字段自动补全，
+      // 不再无脑拒绝低版本，避免数据丢失。
+      STATE = canonicalizeState(obj);
       persist();
       renderAll();
     }
@@ -2120,6 +2222,8 @@
     // ════════════════════════════════════════════════════════════════
 
     function renderAll() {
+      // 周挑战发奖必须在 renderWeeklyChallenge 之前（render 是纯渲染）
+      const leveledUp = claimWeeklyChallengeIfDone();
       renderTopbarPill();
       renderTopbarQuote();
       renderSheet();
@@ -2132,6 +2236,35 @@
       renderWeeklyChallenge();
       renderLogTab();
       renderFeatured();
+      // 升级可能解锁新 quest — 重新渲染一次（虽然上面已调，但保险）
+      if (leveledUp) renderQuests();
+    }
+
+    // 周挑战发奖 — 副作用独立出来，render 是纯渲染
+    // 在 renderAll 里、renderWeeklyChallenge 之前调用一次
+    function claimWeeklyChallengeIfDone() {
+      const challenge = getWeeklyChallenge();
+      const claimKey = `${challenge.weekKey}:${challenge.id}`;
+      const isClaimed = !!(STATE.weeklyClaimed && STATE.weeklyClaimed[claimKey]);
+      if (!challenge.completed || isClaimed) return false;
+
+      if (!STATE.weeklyClaimed) STATE.weeklyClaimed = {};
+      STATE.weeklyClaimed[claimKey] = true;
+      // 按挑战类型分发到相关技能，而不是全堆到 spirit-1
+      const targets = resolveWeeklyTargets(challenge);
+      const xpEach = Math.max(1, Math.round(challenge.xp / targets.length));
+      let anyLevelUp = false;
+      for (const targetId of targets) {
+        const ups = addXp(targetId, xpEach);
+        logEntry('weekly', targetId, xpEach, `周挑战：${challenge.name}`);
+        if (ups.length) {
+          anyLevelUp = true;
+          const sname = findSkill(targetId)?.name || targetId;
+          logEntry('levelup', targetId, 0, `${sname} Lv.${ups[ups.length - 1]}`);
+        }
+      }
+      persist();
+      return anyLevelUp;
     }
 
     function renderWeeklyChallenge() {
@@ -2142,7 +2275,7 @@
       const isClaimed = !!(STATE.weeklyClaimed && STATE.weeklyClaimed[claimKey]);
 
       el.innerHTML = `
-        <div class="weekly-card ${challenge.completed && isClaimed ? 'is-done' : (challenge.completed ? '' : '')}">
+        <div class="weekly-card ${challenge.completed && isClaimed ? 'is-done' : ''}">
           <div class="head">
             <div class="name">${escapeHtml(challenge.name)}</div>
             <div class="xp">+${challenge.xp} XP</div>
@@ -2155,18 +2288,6 @@
           }</div>
         </div>
       `;
-
-      // 周挑战完成时给一次性 XP（每个 (weekKey, id) 只发一次）
-      if (challenge.completed && !isClaimed) {
-        if (!STATE.weeklyClaimed) STATE.weeklyClaimed = {};
-        STATE.weeklyClaimed[claimKey] = true;
-        const ups = addXp('spirit-1', challenge.xp);
-        logEntry('weekly', 'spirit-1', challenge.xp, `周挑战：${challenge.name}`);
-        if (ups.length) logEntry('levelup', 'spirit-1', 0, `自知 Lv.${ups[ups.length - 1]}`);
-        persist();
-        // spirit-1 升级可能解锁新 quest，重渲染 quest 列表（不调 renderAll 避免递归）
-        if (typeof renderQuests === 'function') renderQuests();
-      }
 
       const meta = document.getElementById('weekly-meta');
       if (meta) meta.textContent = isClaimed ? `已完成 · ${challenge.weekKey} 周` : `${challenge.weekKey} 周 · 判定中`;
@@ -2271,9 +2392,9 @@
       try {
         const d = offsetDate(quoteOffset);
         const q = await fetchWikiquoteQuote(d);
-        const full = q.author ? `「${q.text}」 — ${q.author}` : `「${q.text}」`;
-        el.textContent = full;
-        el.title = full + (q.source === 'local' ? '  (本地回退)' : '');
+        el.textContent = q.author ? `「${q.text}」 — ${q.author}` : `「${q.text}」`;
+        // title 只放来源标记（避免与 textContent 重复）
+        el.title = q.source === 'local' ? '本地回退' : '';
         // 同步按钮 enabled 状态
         const next = document.getElementById('quote-next');
         if (next) next.disabled = isFutureDate(offsetDate(quoteOffset + 1));
@@ -2425,12 +2546,30 @@
       for (const b of BRANCHES) {
         svg.appendChild(svgLine(svg, { x1: b.col, y1: 215, x2: b.col, y2: 660, stroke: '#dbdbdb', sw: 1, dash: '2 3' }));
       }
-      const synLines = [
-        { x1: 240, y1: 400, x2: 300, y2: 400 },     // 体能(身 r1) ↔ 专注(心 r1)
-        { x1: 520, y1: 530, x2: 460, y2: 660 },     // 写作(技 r2) ↔ 创造(心 r3)
-        { x1: 680, y1: 400, x2: 740, y2: 270 },     // 沟通(技 r1) ↔ 同理(群 r0)
-        { x1: 520, y1: 270, x2: 460, y2: 530 },     // 学习(技 r0) ↔ 逻辑(心 r2)
-      ];
+      const synLines = (() => {
+        // 从 SYNERGY_PAIRS 计算每条线的两端坐标（节点中心）
+        // 去重：无向 pair 只画一次
+        const drawn = new Set();
+        const lines = [];
+        for (const [a, b] of SYNERGY_PAIRS) {
+          const key = [a, b].sort().join('-');
+          if (drawn.has(key)) continue;
+          drawn.add(key);
+          const sa = findSkill(a);
+          const sb = findSkill(b);
+          if (!sa || !sb) continue;
+          const ba = findBranch(sa.branch);
+          const bb = findBranch(sb.branch);
+          if (!ba || !bb) continue;
+          lines.push({
+            x1: ba.col,
+            y1: 270 + sa.row * 130,
+            x2: bb.col,
+            y2: 270 + sb.row * 130,
+          });
+        }
+        return lines;
+      })();
       for (const ln of synLines) {
         svg.appendChild(svgLine(svg, { x1: ln.x1, y1: ln.y1, x2: ln.x2, y2: ln.y2, stroke: '#000000', sw: 0.5, dash: '3 3', opacity: 0.35 }));
       }
@@ -2464,7 +2603,9 @@
         const dotsG = document.createElementNS(ns, 'g');
         dotsG.setAttribute('class', 'dots');
         dotsG.setAttribute('transform', 'translate(-32, 14)');
-        for (let i = 0; i < 5; i++) {
+        // dot 数量 = MAX_LEVEL（5），用 dotsContainerWidth/dotsPerLevel 居中；
+        // 这里直接传 5 个，写死避免重算 width — MAX_LEVEL 改了的话这里手动同步
+        for (let i = 0; i < MAX_LEVEL; i++) {
           const c = document.createElementNS(ns, 'circle');
           c.setAttribute('cx', String(i * 16)); c.setAttribute('cy', '0'); c.setAttribute('r', '3.5');
           if (i < lv) {
@@ -3031,6 +3172,11 @@
           // 兼容中文：encodeURIComponent + unescape
           const b64 = btoa(unescape(encodeURIComponent(json)));
           const url = `${location.origin}${location.pathname}#share=${b64}`;
+          // URL 长度预警：浏览器 URL 限制差异大（IE 2KB, 现代 32KB，
+          // 但 Cloudflare/GitHub Pages 等中间层可能截断到 8KB）
+          const sizeWarn = b64.length > 8000
+            ? '\n\n⚠ 当前 state 较大（base64 ' + Math.round(b64.length/1024) + ' KB），\n建议改用「下载 .json」文件方式分享，避免链接被中间层截断。'
+            : '';
           const fallbackCopy = () => {
             const ta = document.createElement('textarea');
             ta.value = url; document.body.appendChild(ta);
@@ -3038,14 +3184,14 @@
           };
           if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(url).then(
-              () => { markBacked(); renderBackupReminder(); alert('分享链接已复制到剪贴板。\n\n任何人打开此链接都会导入你的进度。'); },
-              () => { fallbackCopy(); markBacked(); renderBackupReminder(); alert('分享链接已复制（回退方式）。'); }
+              () => { markBacked(); renderBackupReminder(); alert('分享链接已复制到剪贴板。\n\n任何人打开此链接都会导入你的进度。' + sizeWarn); },
+              () => { fallbackCopy(); markBacked(); renderBackupReminder(); alert('分享链接已复制（回退方式）。' + sizeWarn); }
             );
           } else {
             fallbackCopy();
             markBacked();
             renderBackupReminder();
-            alert('分享链接已复制。');
+            alert('分享链接已复制。' + sizeWarn);
           }
         } catch (e) {
           alert('生成分享链接失败：' + e.message);
@@ -3129,7 +3275,7 @@
       if (!m) return;
       m.hidden = false;
       m.classList.add('is-open');
-      if (name === 'settings') renderBackupReminder();
+      if (name === 'settings') { renderBackupReminder(); renderSync(); }
       const close = m.querySelector('[data-modal-close]');
       if (close) close.focus();
     }
@@ -3163,10 +3309,217 @@
       setTimeout(() => node.classList.remove('flash'), FLASH_KEEP_MS);
     }
 
+    // ─── 云同步 ──────────────────────────────────────────────────
+    let SYNC_SESSION = null;  // { token, user: { id, login, name, avatar } } 或 null
+
+    function getSyncSession() {
+      if (SYNC_SESSION) return SYNC_SESSION;
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_SESSION);
+        if (raw) SYNC_SESSION = JSON.parse(raw);
+      } catch (_) {}
+      return SYNC_SESSION;
+    }
+    function setSyncSession(token, user) {
+      SYNC_SESSION = { token, user };
+      try { localStorage.setItem(STORAGE_KEY_SESSION, JSON.stringify(SYNC_SESSION)); } catch (_) {}
+    }
+    function clearSyncSession() {
+      SYNC_SESSION = null;
+      try { localStorage.removeItem(STORAGE_KEY_SESSION); } catch (_) {}
+    }
+    function tryLoadSyncSession() {
+      // 新流程：从 URL #code=... 接收一次性 code，再 POST 换 JWT
+      // （不再让 30 天有效的 JWT 直接出现在 URL 历史里）
+      const hash = location.hash || '';
+      const m = hash.match(/^#code=(.+)$/);
+      if (m) {
+        history.replaceState(null, '', location.pathname + location.search);
+        if (!SYNC_SERVER) {
+          console.warn('SYNC_SERVER not configured, cannot exchange code');
+          return false;
+        }
+        // 异步发起交换 — 但因为 tryLoadSyncSession 是同步函数，触发后台流程
+        // 完成后会调 renderSync() 让 UI 跟上。
+        exchangeCodeForSession(m[1]).catch(err => {
+          console.warn('code exchange failed:', err);
+          alert('登录失败：' + err.message);
+        });
+        return true;
+      }
+      // 兼容旧链接（#session=JWT）— 仍然直接接受，但会有 30 天窗口的 URL 残留风险
+      const m2 = hash.match(/^#session=(.+)$/);
+      if (m2) {
+        try {
+          const payload = JSON.parse(decodeURIComponent(escape(atob(m2[1].split('.')[1]))));
+          if (!payload || !payload.id) throw new Error('bad payload');
+          setSyncSession(m2[1], {
+            id: payload.id,
+            login: payload.login,
+            name: payload.name,
+            avatar: payload.avatar,
+          });
+          history.replaceState(null, '', location.pathname + location.search);
+          return true;
+        } catch (e) {
+          console.warn('legacy session load failed:', e);
+          history.replaceState(null, '', location.pathname + location.search);
+          return false;
+        }
+      }
+      return false;
+    }
+
+    async function exchangeCodeForSession(code) {
+      const r = await fetch(SYNC_SERVER + '/auth/exchange', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+      });
+      if (!r.ok) throw new Error('exchange ' + r.status);
+      const data = await r.json();
+      if (!data.token || !data.user || !data.user.id) throw new Error('bad response');
+      setSyncSession(data.token, {
+        id: data.user.id,
+        login: data.user.login,
+        name: data.user.name,
+        avatar: data.user.avatar,
+      });
+      renderSync();
+    }
+
+    async function syncFetch(path, opts = {}) {
+      const sess = getSyncSession();
+      const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
+      if (sess) headers['Authorization'] = `Bearer ${sess.token}`;
+      const r = await fetch(SYNC_SERVER + path, { ...opts, headers });
+      if (r.status === 401) {
+        clearSyncSession();
+        renderSync();
+      }
+      return r;
+    }
+
+    async function syncUpload() {
+      const r = await syncFetch('/sync', {
+        method: 'PUT',
+        body: JSON.stringify({ state: STATE }),
+      });
+      if (!r.ok) throw new Error('upload ' + r.status);
+      return await r.json();
+    }
+    async function syncDownload() {
+      const r = await syncFetch('/sync');
+      if (!r.ok) throw new Error('download ' + r.status);
+      return await r.json();
+    }
+
+    function renderSync() {
+      const mount = document.getElementById('sync-mount');
+      const statusEl = document.getElementById('sync-status');
+      if (!mount) return;
+
+      if (!SYNC_SERVER) {
+        if (statusEl) { statusEl.textContent = '未部署'; statusEl.classList.remove('is-on'); }
+        mount.innerHTML = `<div style="font-size:12px; color:var(--muted); padding: 8px 0;">云同步后端未配置。<br/>部署 <code style="font-family: var(--font-mono); font-size:11px;">sync-server/</code> 后，把 <code style="font-family: var(--font-mono); font-size:11px;">SYNC_SERVER</code> 填到 JS 顶部即可启用。</div>`;
+        return;
+      }
+
+      const sess = getSyncSession();
+      if (!sess) {
+        if (statusEl) { statusEl.textContent = '未连接'; statusEl.classList.remove('is-on'); }
+        mount.innerHTML = `
+          <div style="font-size:12px; color:var(--muted); margin-bottom: 8px;">用 GitHub 登录，把数据同步到云端。跨设备无缝。</div>
+          <button class="btn btn-primary btn-sm" id="sync-login-btn">用 GitHub 登录并同步</button>
+        `;
+        const loginBtn = document.getElementById('sync-login-btn');
+        if (loginBtn) loginBtn.addEventListener('click', () => {
+          window.location.href = SYNC_SERVER + '/auth/github';
+        });
+        return;
+      }
+
+      if (statusEl) { statusEl.textContent = `已连接 · ${sess.user.login}`; statusEl.classList.add('is-on'); }
+      mount.innerHTML = `
+        <div class="sync-user">
+          <img class="sync-avatar" src="${escapeHtml(sess.user.avatar || '')}" alt="" />
+          <div>
+            <div class="name">${escapeHtml(sess.user.name || sess.user.login)}</div>
+            <div class="login">@${escapeHtml(sess.user.login)}</div>
+          </div>
+        </div>
+        <div style="font-size: 11px; color: var(--muted); font-family: var(--font-mono); margin-bottom: 8px;" id="sync-meta">—</div>
+        <div class="sync-actions">
+          <button class="btn btn-secondary btn-sm" id="sync-upload-btn">↑ 上传到云</button>
+          <button class="btn btn-secondary btn-sm" id="sync-download-btn">↓ 从云拉取</button>
+          <button class="btn btn-ghost btn-sm" id="sync-delete-btn">清除云端</button>
+          <button class="btn btn-ghost btn-sm" id="sync-logout-btn">登出</button>
+        </div>
+      `;
+
+      const upBtn = document.getElementById('sync-upload-btn');
+      const dlBtn = document.getElementById('sync-download-btn');
+      const delBtn = document.getElementById('sync-delete-btn');
+      const outBtn = document.getElementById('sync-logout-btn');
+      const meta = document.getElementById('sync-meta');
+
+      if (upBtn) upBtn.addEventListener('click', async () => {
+        upBtn.disabled = true; upBtn.textContent = '上传中…';
+        try {
+          const res = await syncUpload();
+          if (meta) meta.textContent = `云端时间：${new Date(res.updatedAt).toLocaleString()}`;
+          alert('已上传到云。');
+        } catch (e) {
+          alert('上传失败：' + e.message);
+        } finally {
+          upBtn.disabled = false; upBtn.textContent = '↑ 上传到云';
+        }
+      });
+
+      if (dlBtn) dlBtn.addEventListener('click', async () => {
+        if (!confirm('从云拉取会覆盖当前本地进度，确定？')) return;
+        dlBtn.disabled = true; dlBtn.textContent = '拉取中…';
+        try {
+          const res = await syncDownload();
+          if (!res.found) {
+            alert('云端没有数据。');
+          } else {
+            importState(res.state);
+            renderAll();
+            if (meta) meta.textContent = `云端时间：${new Date(res.meta.updatedAt).toLocaleString()}`;
+            alert('已从云拉取并覆盖本地。');
+          }
+        } catch (e) {
+          alert('拉取失败：' + e.message);
+        } finally {
+          dlBtn.disabled = false; dlBtn.textContent = '↓ 从云拉取';
+        }
+      });
+
+      if (delBtn) delBtn.addEventListener('click', async () => {
+        if (!confirm('清除云端所有进度数据？（本地数据不受影响）')) return;
+        try {
+          await syncFetch('/sync', { method: 'DELETE' });
+          if (meta) meta.textContent = '云端已清空';
+          alert('云端数据已清除。');
+        } catch (e) {
+          alert('清除失败：' + e.message);
+        }
+      });
+
+      if (outBtn) outBtn.addEventListener('click', () => {
+        clearSyncSession();
+        renderSync();
+      });
+    }
+
     function init() {
-      // 分享链接（#share=base64）优先于本地数据 — 一次性导入并清掉 hash
-      const sharedLoaded = tryLoadShare();
-      if (!sharedLoaded) loadState();
+      // 先加载本地状态，再判断分享链接，避免覆盖时无参照
+      loadState();
+      // 捕获分享链接（只解析、清 hash，不导入）— 本地有数据时弹确认
+      const pendingShare = captureShareLink();
+      // 同步 session（#session=...）— OAuth 回调后被识别
+      tryLoadSyncSession();
       loadSelectedSkill();
       renderChangelogModal();
       const hashId = (location.hash || '').replace('#', '');
@@ -3174,24 +3527,52 @@
       renderAll();
       selectTab(initialTab, { updateHash: false });
       bindEvents();
-      if (sharedLoaded) {
-        setTimeout(() => alert('已从分享链接导入进度数据。'), 80);
+      // 最后才处理分享链接 — 此时本地 STATE 已就绪，可判断是否要确认
+      if (pendingShare) applyShareLink(pendingShare);
+    }
+
+    let PENDING_SHARE = null;
+
+    // 仅解析 + 清 hash，不导入。返回分享的 JSON 字符串或 null。
+    function captureShareLink() {
+      const hash = location.hash || '';
+      const m = hash.match(/^#share=(.+)$/);
+      if (!m) return null;
+      history.replaceState(null, '', location.pathname + location.search);
+      try {
+        const json = decodeURIComponent(escape(atob(m[1])));
+        // 预解析校验 schema，避免污染 STATE
+        const parsed = JSON.parse(json);
+        if (!parsed || parsed.schema !== 'changji-state') {
+          console.warn('share: schema mismatch, ignoring');
+          return null;
+        }
+        return json;
+      } catch (e) {
+        console.warn('share: decode/parse failed, ignoring', e);
+        return null;
       }
     }
 
-    function tryLoadShare() {
-      const hash = location.hash || '';
-      const m = hash.match(/^#share=(.+)$/);
-      if (!m) return false;
+    // 分享链接导入：本地有数据时弹 confirm；空数据时静默导入
+    function applyShareLink(json) {
+      const localHasData = STATE.log.length > 0 || Object.keys(STATE.dailyBrush).length > 0;
+      if (localHasData) {
+        const ok = confirm(
+          '检测到分享链接。\n\n' +
+          '导入将覆盖你当前的本地进度（已记录 ' + STATE.log.length + ' 条修习、' +
+          Object.keys(STATE.dailyBrush).length + ' 笔笔触）。\n\n' +
+          '建议先到「设置」导出当前数据作为备份。\n\n' +
+          '确认覆盖并导入？'
+        );
+        if (!ok) return;
+      }
       try {
-        const json = decodeURIComponent(escape(atob(m[1])));
-        importState(json);  // 校验 + persist
-        history.replaceState(null, '', location.pathname + location.search);
-        return true;
+        importState(json);
+        // 重新加载选中的 skill（schema 一致，无需重置）
+        setTimeout(() => alert('已从分享链接导入进度数据。'), 80);
       } catch (e) {
-        console.warn('share load failed:', e);
-        history.replaceState(null, '', location.pathname + location.search);
-        return false;
+        alert('导入失败：' + e.message);
       }
     }
 

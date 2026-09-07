@@ -1,0 +1,14 @@
+name = "changji-sync"
+main = "worker.js"
+compatibility_date = "2024-09-01"
+
+# KV namespace 绑定（id 需要 wrangler kv:namespace create CHANGJI_STATE 后填入）
+[[kv_namespaces]]
+binding = "CHANGJI_STATE"
+id = "REPLACE_WITH_KV_NAMESPACE_ID"
+
+# Secrets（通过 wrangler secret put 设置，不要写在这里）：
+#   GITHUB_CLIENT_ID      GitHub OAuth App Client ID
+#   GITHUB_CLIENT_SECRET  GitHub OAuth App Client Secret
+#   SESSION_SECRET        JWT 签名密钥（任意 32+ 字符串）
+#   FRONTEND_ORIGIN       前端 origin（默认 https://atelierqin.github.io）

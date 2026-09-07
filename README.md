@@ -4,7 +4,7 @@
 
 一棵真实生活的技能树 — 二十项技能、五级进阶、五大领域、可见的成长与可追的来路。
 
-**版本**: 1.0.0  
+**版本**: 1.2.8  
 **许可证**: CC BY-NC 4.0（见 [LICENSE](./LICENSE)）  
 **入口**: [`real-life-skill-tree.html`](./real-life-skill-tree.html) — 单文件应用，零依赖
 
@@ -16,7 +16,9 @@
 
 ## 它是什么
 
-一个完全跑在浏览器里的单页应用 — 不需要后端，不需要账号，不需要网络（Google Fonts 是可选的，断网也能用）。你的所有数据都存在浏览器本地的 `localStorage`，不会离开你的设备。
+一个完全跑在浏览器里的单页应用 — 默认**不需要**后端，不需要账号，不需要网络（Google Fonts 是可选的，断网也能用）。你的所有数据都存在浏览器本地的 `localStorage`，不会离开你的设备。
+
+**可选**：如果你想跨设备同步，[`sync-server/`](./sync-server/) 提供了一个自托管的 Cloudflare Worker 后端（GitHub OAuth + KV）。详见 [sync-server/README.md](./sync-server/README.md)。
 
 ## 怎么用
 
@@ -51,6 +53,14 @@ CJ.import('{"schema":"changji-state","version":1,...}')
 ```
 
 或者用页面底部的"导出 / 导入"按钮。
+
+### 云同步（可选）
+
+如果部署了 `sync-server/`：
+
+1. 打开设置（⚙ 图标）→ 「云同步」区域
+2. 用 GitHub 登录（OAuth，只读 `read:user` scope）
+3. 「↑ 上传到云」/ 「↓ 从云拉取」（拉取会覆盖本地，请先导出备份）
 
 ## 数据存储
 

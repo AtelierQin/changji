@@ -6,6 +6,67 @@
 
 ---
 
+## [1.2.8] — 2026-09-07
+
+### 新增
+
+- **Quest 系统**：硬编码 5 个 → 24 候选池；按 dayKey 动态选 5 个；自动判定周挑战（5 种）+ 完成发放 XP。
+- **数据迁移**：`SCHEMA_MIGRATIONS` 机制 + `loadState` 尽力兼容任意 version；备份提醒每 14 天。
+- **导入导出升级**：下载 .json 文件 + 复制 base64 分享链接 + 文件选择/拖放/粘贴 多种方式。
+- **今日一笔增强**：tag 系统（空格分隔）+ 90 天热力图（45 列紧凑布局）；brush 数据 shape 升级为 `{ text, tags }`。
+- **Topbar 重设计**：长技 + 每日名人名言；Wikiquote JSONP 拉取 + prev/next 按钮手动切换 + 32 条本地精选 fallback。
+
+### 设计
+
+- 布局重构：底部 tabbar → 左侧 sidebar（220px sticky，分组：旅程 / 每日 / 参考）；topbar 元动作下沉到 sidebar meta 区。
+- max-width 1200 → 1600 充分利用屏幕宽度。
+- Topbar 镜像 `.app-layout` grid：长技对齐 sidebar 内容，名言对齐 main 内容。
+- Topbar quote 支持最多两行（`-webkit-line-clamp: 2`），长句完整可读。
+- 笔触热力图 15 列 → 45 列（GitHub 贡献图风格），90 天 = 2 行。
+
+### 安全
+
+- **分享链接二次确认**：本地有数据时弹 confirm，避免误点覆盖进度。
+- **OAuth 改用 code 交换**：回调只返回 60s TTL 一次性 code，前端 POST 换 JWT，避免 30 天 JWT 留在浏览器历史。
+- **OAuth state 校验**：用 HttpOnly cookie 防 CSRF。
+- **Worker 校验**：`/sync PUT` 加 Content-Length + 字段类型 + 序列化后大小（256KB）多重限制。
+
+### 修复
+
+- **XP 算法 bug**：`xpRequiredForLevel(0)` 返回 0 导致任意勾选 quest 立刻 Lv.0→1 升阶；改为返回累计阈值差（100/200/500/1200/3000）。
+- **maxXP 计算**：20 项技能累加的 totalXP 配 5100 maxXP → 进度条无意义；改为 `LV_THRESH[MAX_LEVEL] * SKILLS.length`。
+- **协同线数据/视图不同步**：SYNERGIES 7 条 / SVG 4 条 错位；改为 `SYNERGY_PAIRS` 单一 source，SVG 从派生坐标画。
+- **周挑战 XP 全部堆到 spirit-1**：按挑战类型分发到相关技能（cross-3 自动 / streak-3 → 自知 / levelup-1 → 学习 / total-100 → 专注 / brush-5 → 情绪）。
+- **importState 拒绝旧版本**：改为走和 loadState 一致的迁移链。
+
+---
+
+## [1.2.7] — 2026-09-07
+
+### 修复
+
+- `renderChangelogModal` 在 mount 元素未渲染时静默失败，不再抛错。
+- 从 `renderAll` 中移除 `renderChangelog` 调用（modal 按需渲染）。
+
+---
+
+## [1.2.6] — 2026-09-07
+
+### 设计
+
+- 更新日志独立成 modal（顶栏按钮），不再混在方法 tab 底部。
+
+---
+
+## [1.2.5] — 2026-09-07
+
+### 备注
+
+- `CHANGELOG_ENTRIES` 所有日期占位符 "—" 替换为真实日期。
+- git tag 命名从 v3.0.x 切到 v1.2.x 系列（产品代码版本号保持 `changji-state` v1）。
+
+---
+
 ## [1.2.4] — 2026-09-06
 
 ### 修复
